@@ -12,6 +12,11 @@ public class StatSystemCore
 
     private uint _currentModifierTimestamp;
 
+    /// <summary>
+    /// Modify the base stat value.
+    /// </summary>
+    /// <param name="targetID"></param>
+    /// <param name="value"></param>
     public void ModifyStatBaseValue(string targetID, float value)
     {
         if (!_statMap.TryGetValue(targetID, out var targetStat))
@@ -39,12 +44,21 @@ public class StatSystemCore
         return ret;
     }
 
+    /// <summary>
+    /// Add stat modifier
+    /// </summary>
+    /// <param name="mod"></param>
     public void AddStatModifier(StatModifier mod)
     {
         mod.TimeStamp = IssueTimestamp();
         _modifiersForCalc.Add(mod);
     }
 
+    /// <summary>
+    /// Get the stat value not modified. (Base Stat Value)
+    /// </summary>
+    /// <param name="targetId"></param>
+    /// <returns></returns>
     public float GetBaseValue(string targetId)
     {
         if (!_statMap.TryGetValue(targetId, out var targetStat))
@@ -56,6 +70,12 @@ public class StatSystemCore
         return targetStat.value;
     }
     
+    /// <summary>
+    /// Get the stat value modified by all modifiers.
+    /// </summary>
+    /// <param name="targetId"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
     public float GetStatApplyValue(string targetId)
     {
         if (!_statMap.TryGetValue(targetId, out var targetStat))
@@ -69,11 +89,7 @@ public class StatSystemCore
         _modifiersForCalc.Sort((ma, mb) =>
         {
             var firstCompare = mb.Priority.CompareTo(ma.Priority);
-            if (firstCompare != 0)
-            {
-                return firstCompare;
-            }
-            return ma.TimeStamp.CompareTo(mb.TimeStamp);
+            return firstCompare != 0 ? firstCompare : ma.TimeStamp.CompareTo(mb.TimeStamp);
         });
 
         var baseValue = targetStat.value;
@@ -95,15 +111,15 @@ public class StatSystemCore
 
         return ret;
     }
-
-    private float CalcTwoValue(float valA, float valB, StatCalcOperator oper)
+    
+    private float CalcTwoValue(float valA, float valB, StatCalcOperator operatorFlag)
     {
-        return oper switch
+        return operatorFlag switch
         {
             StatCalcOperator.Add => valA+valB,
             StatCalcOperator.Mul => valA*valB,
             StatCalcOperator.Div => valA/valB,
-            _ => throw new ArgumentOutOfRangeException(nameof(oper), oper, null)
+            _ => throw new ArgumentOutOfRangeException(nameof(operatorFlag), operatorFlag, null)
         };
     }
 }
