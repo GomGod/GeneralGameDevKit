@@ -40,7 +40,7 @@ namespace GeneralGameDevKit.StatSystem
         public void AddStatModifier(StatModifier mod)
         {
             mod.TimeStamp = IssueTimestamp();
-            _currentModifiers.Add(mod);sm
+            _currentModifiers.Add(mod);
         }
         
         /// <summary>
