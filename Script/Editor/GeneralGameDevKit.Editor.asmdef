@@ -2,7 +2,7 @@
     "name": "GeneralGameDevKit.Editor",
     "rootNamespace": "",
     "references": [
-        "GUID:0909c92e86f3bcc4090ad666a3beafff"
+        "GUID:8a09a45426d2f504b8ab5b745df6a4be"
     ],
     "includePlatforms": [
         "Editor"
