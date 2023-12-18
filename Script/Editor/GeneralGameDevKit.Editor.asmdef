@@ -1,0 +1,18 @@
+{
+    "name": "GeneralGameDevKit.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:0909c92e86f3bcc4090ad666a3beafff"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
