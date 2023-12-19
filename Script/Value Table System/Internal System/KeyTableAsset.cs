@@ -22,7 +22,7 @@ namespace GeneralGameDevKit.ValueTableSystem.Internal
         private List<DefinedKey> keys;
 
         private KeyNode _root;
-        private StringBuilder _sb = new();
+        private readonly StringBuilder _sb = new();
 
         public IEnumerable<string> GetAllKeys() => keys.Select(p => p.GetFullPathOfKey());
 
