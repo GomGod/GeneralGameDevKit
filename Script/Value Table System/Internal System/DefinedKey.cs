@@ -59,6 +59,12 @@ namespace GeneralGameDevKit.ValueTableSystem.Internal
             var targetPath = _splitPath.ToList().GetRange(inDepth, cnt);
             var splitPath = path.Split('/').ToList();
 
+            if (splitPath.Count > targetPath.Count)
+            {
+                return false;
+            }
+            
+            
             for (var i = 0; i < targetPath.Count && i < splitPath.Count; i++)
             {
                 if (!targetPath[i].Equals(splitPath[i]))

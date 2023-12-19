@@ -12,10 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 453cc5d122144ed4ebd0bae1f497f6c2, type: 3}
   m_Name: KeyTableAsset_Example
   m_EditorClassIdentifier: 
-  parameters:
-  - keyPath: Root
-  - keyPath: Root/Test/A
-  - keyPath: Root/Test/B
-  - keyPath: Root/Test/C
-  - keyPath: Root/TestTest/A
-  - keyPath: Root/TestTest/B
+  keys:
+  - keyPath: Example
+  - keyPath: Example/Stat
+  - keyPath: Example/Stat/DEF
+  - keyPath: Example/Stat/INT
+  - keyPath: Example/Stat/STR

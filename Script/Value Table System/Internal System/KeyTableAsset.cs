@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Text;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace GeneralGameDevKit.ValueTableSystem.Internal
 {
@@ -14,22 +16,25 @@ namespace GeneralGameDevKit.ValueTableSystem.Internal
     [CreateAssetMenu(fileName = "KeyTableAsset", menuName = "General Game Dev Kit/Value Table System/Management/Key Table Asset")]
     public class KeyTableAsset : ScriptableObject
     {
-        public static readonly string RootName = "Table Values"; 
-        
-        [SerializeField] private List<DefinedKey> keys;
-        
-        private ValueKeyNode _root;
-        
+        public static readonly string RootName = "Keys";
+
+        [Header("You can edit with this field, but it's not recommended."), SerializeField]
+        private List<DefinedKey> keys;
+
+        private KeyNode _root;
+        private StringBuilder _sb = new();
+
         public IEnumerable<string> GetAllKeys() => keys.Select(p => p.GetFullPathOfKey());
-        
-        public ValueKeyNode BuildKeyTree()
+
+        public KeyNode BuildKeyTree()
         {
             SetEmptyRoot();
 
-            foreach (var param in keys)
+            var keysToAdd = new List<DefinedKey>(keys);
+            foreach (var param in keysToAdd)
             {
                 param.RefreshParameterPath();
-                _root.AddNode(param);
+                AddKeyByPath(param.GetFullPathOfKey());
             }
 
             return _root;
@@ -37,99 +42,135 @@ namespace GeneralGameDevKit.ValueTableSystem.Internal
 
         private void SetEmptyRoot()
         {
-            _root = new ValueKeyNode
-            {
-                CurrentDepth = -1,
-                KeyOfCurrentDepth = RootName
-            };
+            _root = new KeyNode(RootName);
         }
+
         public void AddKeyByPath(string path)
         {
             var newDefinedParam = new DefinedKey(path);
-            keys.Add(newDefinedParam);
+            _sb.Clear();
+            foreach (var pathStr in newDefinedParam.GetSplitPath())
+            {
+                _sb.Append(pathStr);
+                var pathCurrent = _sb.ToString();
+                if (!keys.Any(k => k.GetFullPathOfKey().Equals(pathCurrent)))
+                {
+                    var newKey = new DefinedKey(pathCurrent);
+                    keys.Add(newKey);
+                }
+
+                _sb.Append("/");
+            }
+
             if (_root == null)
             {
                 SetEmptyRoot();
             }
-            _root?.AddNode(newDefinedParam);
+
+            _root?.BeginAddNode(newDefinedParam);
+            keys.Sort((ka, kb) => string.Compare(ka.GetFullPathOfKey(), kb.GetFullPathOfKey(), StringComparison.Ordinal));
         }
 
         public void RemoveKeyByPath(string path)
         {
             var definedParamToRemove = new DefinedKey(path);
-            var depthOfPath = path.Split('/').Length;
-            if (_root.RemoveNode(definedParamToRemove))
+            var removeResult = _root.BeginRemoveNode(definedParamToRemove);
+            if (removeResult)
             {
+                var depthOfPath = path.Split('/').Length;
                 keys.RemoveAll(p => p.CheckIsContainPath(path, 0, depthOfPath));
             }
-        }
 
-        public void ClearAllParams()
-        {
-            _root?.ClearNode();
-            keys.Clear();
+            Debug.Log($"Target Key - {path}, Remove Result - {removeResult.ToString()}");
         }
     }
 
-    public class ValueKeyNode
+    public class KeyNode
     {
-        public int CurrentDepth;
-        public string KeyOfCurrentDepth;
-        public readonly List<ValueKeyNode> Siblings = new();
-        
-        private bool _isRemoveTarget;
-        public void AddNode(DefinedKey keyToAdd)
-        {
-            var nextDepth = CurrentDepth + 1;
-            var nextKey = keyToAdd.GetSingleKeyFromPath(nextDepth);
-            if (nextKey.Equals(string.Empty))
-                return;
+        private static Queue<string> _queueForTreeProcessing = new();
 
-            var index = Siblings.FindIndex(p => p.KeyOfCurrentDepth == nextKey);
-            if (index < 0)
+        private readonly string _pathString;
+        private readonly List<KeyNode> _siblings = new();
+
+        public KeyNode(string pathString)
+        {
+            _pathString = pathString;
+        }
+
+        public string GetPathString() => _pathString;
+
+        public List<KeyNode> GetSiblings() => new(_siblings);
+
+        public void BeginAddNode(DefinedKey defKey)
+        {
+            BuildQueueForTreeProcessing(defKey, ref _queueForTreeProcessing);
+            AddNode(ref _queueForTreeProcessing);
+        }
+
+        public bool BeginRemoveNode(DefinedKey defKey)
+        {
+            BuildQueueForTreeProcessing(defKey, ref _queueForTreeProcessing);
+            return RemoveNode(ref _queueForTreeProcessing);
+        }
+
+        private static void BuildQueueForTreeProcessing(DefinedKey defKey, ref Queue<string> stringPathQueue)
+        {
+            var fullSplitPath = defKey.GetSplitPath();
+            stringPathQueue.Clear();
+            foreach (var path in fullSplitPath)
             {
-                var newNode = new ValueKeyNode
-                {
-                    CurrentDepth = nextDepth,
-                    KeyOfCurrentDepth = nextKey
-                };
-                Siblings.Add(newNode);
-                newNode.AddNode(keyToAdd);
-            }
-            else
-            {
-                Siblings[index].AddNode(keyToAdd);
+                stringPathQueue.Enqueue(path);
             }
         }
 
-        public bool RemoveNode(DefinedKey keyToRemove)
+        private void AddNode(ref Queue<string> splitPathQueue)
         {
-            var nextDepth = CurrentDepth + 1;
-            var nextKey = keyToRemove.GetSingleKeyFromPath(nextDepth);
-            if (nextKey == string.Empty)
+            if (splitPathQueue == null)
             {
-                _isRemoveTarget = KeyOfCurrentDepth.Equals(keyToRemove.GetSingleKeyFromPath(CurrentDepth));
-                return _isRemoveTarget;
+                throw new NullReferenceException($"Null stack detected during {MethodBase.GetCurrentMethod()?.ReflectedType?.FullName ?? "AddNode()"} in KeyNode."); //todo : err handling
             }
 
-            var index = Siblings.FindIndex(p => p.KeyOfCurrentDepth == nextKey);
-            if (index < 0)
+            if (splitPathQueue.Count == 0)
+            {
+                return;
+            }
+
+            var nextPath = splitPathQueue.Dequeue();
+            var siblingIdx = _siblings.FindIndex(n => n._pathString.Equals(nextPath));
+            if (siblingIdx >= 0)
+            {
+                _siblings[siblingIdx].AddNode(ref splitPathQueue);
+            }
+            else
+            {
+                var newNode = new KeyNode(nextPath);
+                _siblings.Add(newNode);
+                newNode.AddNode(ref splitPathQueue);
+            }
+        }
+
+        private bool RemoveNode(ref Queue<string> splitPathQueue)
+        {
+            if (splitPathQueue == null)
+            {
+                throw new NullReferenceException($"Null stack detected during {MethodBase.GetCurrentMethod()?.ReflectedType?.FullName ?? "AddNode()"} in KeyNode."); //todo : err handling
+            }
+
+            var nextPath = splitPathQueue.Dequeue();
+            var siblingIdx = _siblings.FindIndex(n => n._pathString.Equals(nextPath));
+
+            if (siblingIdx < 0)
             {
                 return false;
             }
 
-            var result = Siblings[index].RemoveNode(keyToRemove);
-            Siblings.RemoveAll(p => p._isRemoveTarget);
-            return result;
-        }
-
-        public void ClearNode()
-        {
-            foreach (var node in Siblings)
+            if (splitPathQueue.Count == 0)
             {
-                node.ClearNode();
+                _siblings.RemoveAt(siblingIdx);
+                return true;
             }
-            Siblings.Clear();
+
+            return _siblings[siblingIdx].RemoveNode(ref splitPathQueue);
         }
     }
 }

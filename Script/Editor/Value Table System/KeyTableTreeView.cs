@@ -40,28 +40,26 @@ namespace GeneralGameDevKit.ValueTableSystem.Internal.Editor
             var rootNode = _container.BuildKeyTree();
             _currentIdOrder = 1;
             _allItems.Clear();
-            BuildTreeViewItems(rootNode);
+            BuildTreeViewItems(rootNode, 0);
             SetupParentsAndChildrenFromDepths(root, _allItems);
 
             return root;
         }
 
         private int _currentIdOrder;
-        private void BuildTreeViewItems(ValueKeyNode node)
-        {
-            if (node.CurrentDepth >= 0)
-            {
-                _allItems.Add(new TreeViewItem
-                {
-                    id = _currentIdOrder++,
-                    depth = node.CurrentDepth,
-                    displayName = node.KeyOfCurrentDepth
-                });
-            }
 
-            foreach (var nextNode in node.Siblings)
+        private void BuildTreeViewItems(KeyNode node, int depth)
+        {
+            _allItems.Add(new TreeViewItem
             {
-                BuildTreeViewItems(nextNode);
+                id = _currentIdOrder++,
+                depth = depth,
+                displayName = node.GetPathString()
+            });
+
+            foreach (var nextNode in node.GetSiblings())
+            {
+                BuildTreeViewItems(nextNode, depth + 1);
             }
         }
     }

@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03c81a3688184887a941a44aca5fc320, type: 3}
   m_Name: KeyStringUsage_Example
   m_EditorClassIdentifier: 
-  keyString:
-  - keyString: Root/Test/B
-  - keyString: Root/TestTest/B
-  - keyString: Root/Test/A
+  keyStringForExample:
+    keyString: Example/Stat/DEF
+  keyStringList:
+  - keyString: Example/Stat/STR
+  - keyString: Example/Stat/INT
