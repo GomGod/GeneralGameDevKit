@@ -25,7 +25,13 @@ namespace GeneralGameDevKit.ValueTableSystem.Internal
             }
         }
 
-        public IEnumerable<string> GetAllParameters(string containerName)
+        /// <summary>
+        /// Obtain all keys in container.
+        /// Returns null if there is no table.
+        /// </summary>
+        /// <param name="containerName">target container's name</param>
+        /// <returns>Collections of key path strings.</returns>
+        public IEnumerable<string> GetAllKeys(string containerName)
         {
             return _loadedTableAssets.TryGetValue(containerName, out var asset) ? asset.GetAllKeys() : null;
         }

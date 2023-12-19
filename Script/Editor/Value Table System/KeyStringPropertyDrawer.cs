@@ -22,7 +22,7 @@ namespace GeneralGameDevKit.ValueTableSystem.Internal.Editor
         {            
             var keyValueProperty = property.FindPropertyRelative(KeyString.GetKeyStringFieldName());
             var valueManagerAttributes = property.GetAttributes<KeyTableAttribute>(false);
-            var paramsList = KeyTableAssetManager.Instance.GetAllParameters(valueManagerAttributes[0].AssetName)?.ToList();
+            var paramsList = KeyTableAssetManager.Instance.GetAllKeys(valueManagerAttributes[0].AssetName)?.ToList();
 
             if (paramsList == null || valueManagerAttributes.Length == 0)
             {
