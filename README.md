@@ -1,11 +1,11 @@
-Update 12.18 2023
+Update 12.19 2023
 
 ## General Purpose Game Development Kit for Unity
 It can be used for free. </br>
 There is no release version yet. I'm working hard on devloping this kit.
 
 ### Final Features Goal
-* Stat system >>> Current Developing
+* Stat system
 * Tag system (Similar to Unreal GameplayTag)
 * Global Event Management
 * Value Table System
