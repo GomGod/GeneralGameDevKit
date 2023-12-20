@@ -8,7 +8,7 @@ using UnityEngine;
 namespace GeneralGameDevKit.ValueTableSystem.Internal
 {
     /// <summary>
-    /// Table asset for store keys. <br/>
+    /// Table asset for storing keys. <br/>
     /// This asset must be located at Resources/ValueTableAssets <br/>
     /// You can access keys with KeyString and KeyTable("name") Attribute. <br/>
     /// Look at the example for more details.
