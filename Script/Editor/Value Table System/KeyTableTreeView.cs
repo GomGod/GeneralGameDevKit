@@ -8,8 +8,10 @@ namespace GeneralGameDevKit.ValueTableSystem.Internal.Editor
     /// </summary>
     public class KeyTableTreeView : TreeView
     {
+        private KeyNode _rootNode;
         private KeyTableAsset _container;
         private List<TreeViewItem> _allItems = new();
+        
         
         public KeyTableTreeView(TreeViewState state) : base(state)
         {
@@ -18,10 +20,15 @@ namespace GeneralGameDevKit.ValueTableSystem.Internal.Editor
 
         public void SetContainer(KeyTableAsset cont)
         {
+            if (cont != null && _container != cont)
+            {
+                _rootNode = cont.BuildKeyTree();
+            }
+
             _container = cont;
             Reload();
         }
-        
+
         protected override TreeViewItem BuildRoot()
         {
             var root = new TreeViewItem
@@ -36,11 +43,10 @@ namespace GeneralGameDevKit.ValueTableSystem.Internal.Editor
                 root.AddChild(new TreeViewItem(1, 0, "Empty"));
                 return root;
             }
-
-            var rootNode = _container.BuildKeyTree();
+            
             _currentIdOrder = 1;
             _allItems.Clear();
-            BuildTreeViewItems(rootNode, 0);
+            BuildTreeViewItems(_rootNode, 0);
             SetupParentsAndChildrenFromDepths(root, _allItems);
 
             return root;
