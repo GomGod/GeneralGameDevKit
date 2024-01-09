@@ -29,8 +29,11 @@ namespace GeneralGameDevKit.ValueTableSystem.Internal
         public KeyNode BuildKeyTree()
         {
             SetEmptyRoot();
-
-            var keysToAdd = new List<DefinedKey>(keys);
+          
+            var keysToAdd = new List<DefinedKey>();
+            if(keys != null)
+                keysToAdd.AddRange(keys);
+            
             foreach (var param in keysToAdd)
             {
                 param.RefreshParameterPath();
