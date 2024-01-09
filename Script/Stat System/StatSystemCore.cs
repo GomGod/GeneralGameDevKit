@@ -39,8 +39,27 @@ namespace GeneralGameDevKit.StatSystem
         /// <param name="mod"></param>
         public void AddStatModifier(StatModifier mod)
         {
-            mod.TimeStamp = IssueTimestamp();
-            _currentModifiers.Add(mod);
+            switch (mod.ModPolicy)
+            {
+                case StatModifier.ModificationPolicy.Instant:
+                    
+                    var valueToApply = mod.CalcPolicy switch
+                    {
+                        StatModifier.ModCalculationPolicy.CalcWithBase => GetBaseValue(mod.TargetStatID),
+                        StatModifier.ModCalculationPolicy.CalcWithResult => GetStatApplyValue(mod.TargetStatID),
+                        _ => throw new ArgumentOutOfRangeException()
+                    };
+
+                    valueToApply = CalcTwoValue(valueToApply, mod.Coefficient, mod.CalcOperator);
+                    ModifyStatBaseValue(mod.TargetStatID, valueToApply);
+                    break;
+                case StatModifier.ModificationPolicy.Temporary:
+                    mod.TimeStamp = IssueTimestamp();
+                    _currentModifiers.Add(mod);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
         
         /// <summary>
@@ -105,12 +124,12 @@ namespace GeneralGameDevKit.StatSystem
             var ret = targetStat.statValue;
             foreach (var mod in _modifiersForCalc)
             {
-                switch (mod.CalcChainType)
+                switch (mod.CalcPolicy)
                 {
-                    case StatModifier.ModifyChainType.CalcWithBase:
+                    case StatModifier.ModCalculationPolicy.CalcWithBase:
                         ret += CalcTwoValue(baseValue, mod.Coefficient, mod.CalcOperator);
                         break;
-                    case StatModifier.ModifyChainType.CalcWithResult:
+                    case StatModifier.ModCalculationPolicy.CalcWithResult:
                         ret = CalcTwoValue(ret, mod.Coefficient, mod.CalcOperator);
                         break;
                     default:
@@ -177,10 +196,17 @@ namespace GeneralGameDevKit.StatSystem
         public string TargetStatID; //This id must be unique, used to find specific modifier.
         public float Coefficient; //Value for calculation.
 
+        public ModificationPolicy ModPolicy; //Modification policy that defines modifier apply as temporary or permanently.
         public StatCalcOperator CalcOperator;
-        public ModifyChainType CalcChainType; //Type of calculate chain.
+        public ModCalculationPolicy CalcPolicy; //Type of calculate chain.
 
-        public enum ModifyChainType
+        public enum ModificationPolicy
+        {
+            Instant,
+            Temporary
+        }
+        
+        public enum ModCalculationPolicy
         {
             CalcWithBase, //calculate with base value, and result will be add to apply stat value.
             CalcWithResult //calculate with result value.
