@@ -19,7 +19,7 @@ namespace GeneralGameDevKit.ValueTableSystem.Internal
         public static readonly string RootName = "Keys";
 
         [Header("You can edit with this field, but it's not recommended."), SerializeField]
-        private List<DefinedKey> keys;
+        private List<DefinedKey> keys = new ();
 
         private KeyNode _root;
         private readonly StringBuilder _sb = new();
