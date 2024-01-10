@@ -181,8 +181,6 @@ namespace GeneralGameDevKit.StatSystem
     {
         public string ID; //Unique Id for indicate stat. (hp, atk, def.... or unique numbers)
         public float statValue;
-
-        //todo : tag of stats
     }
 
     /// <summary>

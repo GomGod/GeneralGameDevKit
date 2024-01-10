@@ -1,11 +1,33 @@
-﻿namespace Developer.GeneralGameDevKit.TagSystem
+﻿using System.Collections.Generic;
+
+namespace Developer.GeneralGameDevKit.TagSystem
 {
     public class DevKitTag
     {
+        private static Dictionary<string, DevKitTag> globalTagCollection = new(); 
+        
         private readonly string[] _tagStructure;
         private readonly string _fullPathOfTag;
 
-        public DevKitTag(string fullPathOfTag)
+        public static void LoadTagCollection(IEnumerable<string> pathCollection)
+        {
+            foreach (var path in pathCollection)
+            {
+                _ = RequestTag(path);
+            }
+        }
+        
+        public static DevKitTag RequestTag(string fullPathOfTag)
+        {
+            if (globalTagCollection.TryGetValue(fullPathOfTag, out var ret))
+                return ret;
+
+            var newTag = new DevKitTag(fullPathOfTag);
+            globalTagCollection.Add(fullPathOfTag, newTag);
+            return newTag;
+        }
+        
+        private DevKitTag(string fullPathOfTag)
         {
             _fullPathOfTag = fullPathOfTag;
             _tagStructure = fullPathOfTag.Split('/');
