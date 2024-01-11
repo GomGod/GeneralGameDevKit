@@ -8,7 +8,7 @@ There is no release version yet. I'm working hard on devloping this kit.
 * Stat system
 * Tag system (Similar to Unreal GameplayTag)
 * Global Event Management
-* Value Table System
+* Key Table System
 * Utiles for data processing
 
 ---
