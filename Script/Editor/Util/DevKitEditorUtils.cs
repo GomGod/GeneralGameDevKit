@@ -30,13 +30,19 @@ namespace Developer.GeneralGameDevKit.Editor
                 var fieldInfo = targetObjectType.GetField(pathSegment, AllBindingFlags);
                 if (fieldInfo != null)
                 {
-                    return (T[])fieldInfo.GetCustomAttributes<T>(inherit);
+                    var ret = (T[])fieldInfo.GetCustomAttributes<T>(inherit);
+                    if(ret.Length == 0)
+                        continue;
+                    return ret;
                 }
 
                 var propertyInfo = targetObjectType.GetProperty(pathSegment, AllBindingFlags);
                 if (propertyInfo != null)
                 {
-                    return (T[])propertyInfo.GetCustomAttributes<T>(inherit);
+                    var ret= (T[])propertyInfo.GetCustomAttributes<T>(inherit);
+                    if (ret.Length == 0)
+                        continue;
+                    return ret;
                 }
             }
 

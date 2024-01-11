@@ -1,4 +1,5 @@
-﻿using GeneralGameDevKit.ValueTableSystem.Internal;
+﻿using System.Linq;
+using GeneralGameDevKit.ValueTableSystem.Internal;
 using UnityEngine;
 
 namespace Developer.GeneralGameDevKit.TagSystem
@@ -12,7 +13,7 @@ namespace Developer.GeneralGameDevKit.TagSystem
 
         private void Awake()
         {
-            DevKitTag.LoadTagCollection(tagTableAsset.GetAllKeys());
+            DevKitTag.LoadTagCollection(tagTableAsset.GetAllKeys().Select(path => path.Split('/').Last()));
         }
     }
 }

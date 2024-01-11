@@ -7,8 +7,8 @@ namespace Developer.GeneralGameDevKit.TagSystem
     [Serializable]
     public class DevKitTagSerializable
     {
-        [SerializeField, KeyTable("KeyTableAsset_Tags")]
-        private string keyValue;
-        public DevKitTag GetTagInstance() => DevKitTag.RequestTag(keyValue);
+        [SerializeField]
+        private KeyString keyValue;
+        public DevKitTag GetTagInstance() => DevKitTag.RequestTag(keyValue.GetKeyString());
     }
 }

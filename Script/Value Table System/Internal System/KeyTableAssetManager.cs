@@ -15,7 +15,7 @@ namespace GeneralGameDevKit.ValueTableSystem.Internal
         
         public KeyTableAssetManager()
         {
-            var loadedTableAssets = Resources.LoadAll<KeyTableAsset>("ValueTableAssets");
+            var loadedTableAssets = Resources.LoadAll<KeyTableAsset>("KeyTableAssets");
             if (loadedTableAssets.Length <= 0) return;
             
             _loadedTableAssets.Clear();
