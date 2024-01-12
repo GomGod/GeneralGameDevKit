@@ -6,17 +6,27 @@ using UnityEngine;
 
 namespace GeneralGameDevKit.StatSystem
 {
-    [CreateAssetMenu(menuName = "General Game Dev Kit/Stat System/Effect Profile", fileName = "StatEffectProfile")]
+    [CreateAssetMenu(menuName = "General Game Dev Kit/Stat System/Stat Effect Profile", fileName = "StatEffectProfile")]
     public class StatEffectProfile : ScriptableObject
     {
+        [Header("Essential")]
+        [SerializeField] public string profileID;
         
-        
-        [Header("Tags")]
-        [SerializeField, KeyTable("KeyTableAsset_Tags" )] 
-        public List<DevKitTagSerializable> effectTags;
+        [Header("Text Resources")] 
+        [SerializeField] public string effectIconId;
+        [SerializeField] public string effectName;
+        [SerializeField, TextArea] public string effectDesc;
         
         [Header("Stat Modifiers")]
-        public List<StatModifier> ProfileStatModifiers;
+        [SerializeField] public List<StatModifier> statModifiers;
+
+        [Header("Tags")] 
+        [SerializeField, KeyTable("KeyTableAsset_Tags")]
+        public List<DevKitTag> effectTags;
+        
+        [Header("Duration")] 
+        [SerializeField] public float duration;
+        [SerializeField] public DurationPolicy durationPolicy;
         
         [Header("Stacking")]
         [SerializeField] public int maxStack;
@@ -42,7 +52,11 @@ namespace GeneralGameDevKit.StatSystem
             RemoveSingleStack,
             ClearAllStack
         }
-        
-        //todo - implements single statEffectInstance
+
+        public enum DurationPolicy
+        {
+            Manual,
+            Infinite
+        }
     }
 }
