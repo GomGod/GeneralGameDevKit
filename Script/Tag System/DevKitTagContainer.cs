@@ -1,30 +1,33 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace Developer.GeneralGameDevKit.TagSystem
 {
+    [Serializable]
     public class DevKitTagContainer
     {
-        private List<DevKitTag> _tagCollection = new();
+        [SerializeField] private List<DevKitTag> tagCollection = new();
 
         public bool HasSuperTagAny(DevKitTag tag)
         {
-            return _tagCollection.Any(tag.IsSubTagOf);
+            return tagCollection.Any(tag.IsSubTagOf);
         }
 
         public bool HasSuperTagAll(DevKitTag tag)
         {
-            return _tagCollection.All(tag.IsSubTagOf);
+            return tagCollection.All(tag.IsSubTagOf);
         }
 
         public bool HasExactTag(DevKitTag tag)
         {
-            return _tagCollection.Any(tag.IsEqual);
+            return tagCollection.Any(tag.IsEqual);
         }
 
         public bool IsSubContainerOf(DevKitTagContainer container)
         {
-            return _tagCollection.All(container.HasExactTag);
+            return tagCollection.All(container.HasExactTag);
         }
     }
 }

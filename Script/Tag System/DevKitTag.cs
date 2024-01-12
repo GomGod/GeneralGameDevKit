@@ -1,49 +1,72 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using GeneralGameDevKit.ValueTableSystem;
+using UnityEngine;
 
 namespace Developer.GeneralGameDevKit.TagSystem
 {
+    [Serializable]
     public class DevKitTag
     {
-        private static Dictionary<string, DevKitTag> globalTagCollection = new(); 
+        [SerializeField, KeyTable("KeyTableAsset_Tags")] private KeyString tagKey; 
         
-        private readonly string[] _tagStructure;
-        private readonly string _fullPathOfTag;
-
-        public static void LoadTagCollection(IEnumerable<string> pathCollection)
+        private static Dictionary<string, DevKitTag> _globalTagCollection = new();
+        private string _fullPathOfTag;
+        private string[] _tagStructure;
+        
+        public static void LoadTagCollection(IEnumerable<DevKitTag> tagCollection)
         {
-            foreach (var path in pathCollection)
+            foreach (var tag in tagCollection)
             {
-                _ = RequestTag(path);
+                LoadTag(tag);
             }
+        }
+        
+        public static void LoadTag(DevKitTag tag)
+        {
+            tag.InitializeTag();
+            _globalTagCollection.Add(tag._fullPathOfTag, tag);
+        }
+
+        internal DevKitTag(string path)
+        {
+            _fullPathOfTag = path;
+            _tagStructure = _fullPathOfTag.Split('/');
+        }
+        
+        private void InitializeTag()
+        {
+            _fullPathOfTag = tagKey.GetKeyString();
+            _tagStructure = _fullPathOfTag.Split('/');
         }
         
         public static DevKitTag RequestTag(string fullPathOfTag)
         {
-            if (globalTagCollection.TryGetValue(fullPathOfTag, out var ret))
+            if (_globalTagCollection.TryGetValue(fullPathOfTag, out var ret))
+            {
                 return ret;
+            }
 
-            var newTag = new DevKitTag(fullPathOfTag);
-            globalTagCollection.Add(fullPathOfTag, newTag);
-            return newTag;
-        }
-        
-        private DevKitTag(string fullPathOfTag)
-        {
-            _fullPathOfTag = fullPathOfTag;
-            _tagStructure = fullPathOfTag.Split('/');
+            throw new Exception($"There is no tag({fullPathOfTag}). Load tag first.");
         }
 
         /// <summary>
         /// Returns single string corresponding to the entire path. 
         /// </summary>
         /// <returns></returns>
-        public string GetFullPathOfTag() => _fullPathOfTag;
-        
+        public string GetFullPathOfTag()
+        {
+            return _fullPathOfTag;
+        }
+
         /// <summary>
         /// Returns string array that make up this tag.
         /// </summary>
         /// <returns>array of strings that make up this tag.</returns>
-        public string[] GetTagStructure() => _tagStructure;
+        public string[] GetTagStructure()
+        {
+            return _tagStructure;
+        }
 
 
         /// <summary>
