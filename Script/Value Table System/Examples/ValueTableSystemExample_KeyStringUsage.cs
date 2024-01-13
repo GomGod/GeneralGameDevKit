@@ -12,14 +12,14 @@ namespace GeneralGameDevKit.ValueTableSystem.Examples
     {
         //How to declare KeyString examples.
         [SerializeField, KeyTable("KeyTableAsset_Example")]
-        private KeyString keyStringForExample;
-        
+        private string keyStringForExample;
+
         //You can also apply KeyTable Attribute to List<KeyString>.
         [SerializeField, KeyTable("KeyTableAsset_Example")]
-        private List<KeyString> keyStringList;
+        private List<string> keyStringList;
 
         private const string TableKeyForExample = "ExampleTable";
-        
+
         /// <summary>
         /// Write value on table.
         /// </summary>
@@ -28,8 +28,8 @@ namespace GeneralGameDevKit.ValueTableSystem.Examples
             var tableManager = KeyValueTableManager.Instance;
             tableManager.AddNewTable(TableKeyForExample);
             var tableToUse = tableManager.GetKeyValueTable(TableKeyForExample);
-            
-            tableToUse.WriteDataOnTableInt(keyStringForExample.GetKeyString(), 1234);
+
+            tableToUse.WriteDataOnTableInt(keyStringForExample, 1234);
         }
 
         /// <summary>
@@ -40,8 +40,8 @@ namespace GeneralGameDevKit.ValueTableSystem.Examples
             var tableManager = KeyValueTableManager.Instance;
             tableManager.AddNewTable(TableKeyForExample);
             var tableToUse = tableManager.GetKeyValueTable(TableKeyForExample);
-            
-            Debug.Log($"{tableToUse.GetTableValueInt(keyStringForExample.GetKeyString())}");
+
+            Debug.Log($"{tableToUse.GetTableValueInt(keyStringForExample)}");
         }
     }
 }

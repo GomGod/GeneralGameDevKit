@@ -14,3 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   keys:
   - keyPath: test
+  - keyPath: test1
+  - keyPath: test2
+  - keyPath: test3

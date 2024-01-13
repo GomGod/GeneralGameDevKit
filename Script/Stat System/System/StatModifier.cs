@@ -13,7 +13,7 @@ namespace GeneralGameDevKit.StatSystem
         [HideInInspector] public uint TimeStamp; //In same priority, smaller will run first. It will be assigned by core system.
         [SerializeField] public int Priority; //Bigger will run first.
 
-        [SerializeField, KeyTable("KeyTableAsset_Stats")] public KeyString TargetStatID; //This id must be unique, used to find specific modifier.
+        [SerializeField, KeyTable("KeyTableAsset_Stats")] public string TargetStatID; //This id must be unique, used to find specific modifier.
         
         [SerializeField] public float Coefficient; //Value for calculation.
 

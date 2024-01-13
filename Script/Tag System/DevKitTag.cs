@@ -8,8 +8,7 @@ namespace Developer.GeneralGameDevKit.TagSystem
     [Serializable]
     public class DevKitTag
     {
-        [SerializeField, KeyTable("KeyTableAsset_Tags")] private KeyString tagKey; 
-        
+        [SerializeField, KeyTable("KeyTableAsset_Tags")] private string tagKey;
         private static Dictionary<string, DevKitTag> _globalTagCollection = new();
         private string _fullPathOfTag;
         private string[] _tagStructure;
@@ -36,7 +35,7 @@ namespace Developer.GeneralGameDevKit.TagSystem
         
         private void InitializeTag()
         {
-            _fullPathOfTag = tagKey.GetKeyString();
+            _fullPathOfTag = tagKey;
             _tagStructure = _fullPathOfTag.Split('/');
         }
         

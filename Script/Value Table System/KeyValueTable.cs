@@ -124,7 +124,7 @@ namespace GeneralGameDevKit.ValueTableSystem
         /// <param name="value">value to write</param>
         public void WriteDataOnTableDouble(string key, double value)
         {
-            key ??= KeyString.NoneValue;
+            key ??= string.Empty;
             _table[key] = value;
 
             var observerCallbacks = GetObservers(key);

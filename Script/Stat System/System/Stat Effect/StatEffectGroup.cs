@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Developer.GeneralGameDevKit.TagSystem;
 using GeneralGameDevKit.ValueTableSystem;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace GeneralGameDevKit.StatSystem
 {
@@ -33,12 +32,12 @@ namespace GeneralGameDevKit.StatSystem
         [SerializeField] public StatEffectProfile.DurationPolicy durationPolicy;
         [SerializeField] public OverrideSourceType durationOverrideSourceType;
         [SerializeField] public float constDuration;
-        [SerializeField, KeyTable("KeyTableAsset_DynamicParameters")] public KeyString dynamicDuration;
+        [SerializeField, KeyTable("KeyTableAsset_DynamicParameters")] public string dynamicDuration;
 
         [Header("Stacking")] 
         [SerializeField] public OverrideSourceType stackOverrideSourceType;
         [SerializeField] public int constMaxStack;
-        [SerializeField, KeyTable("KeyTableAsset_DynamicParameters")] public KeyString dynamicStack;
+        [SerializeField, KeyTable("KeyTableAsset_DynamicParameters")] public string dynamicMaxStack;
         [SerializeField] public StatEffectProfile.StackingPolicy stackingPolicy;
         [SerializeField] public StatEffectProfile.StackOutPolicy stackOutPolicy;
         [SerializeField] public StatEffectProfile.StackDurationPolicy stackDurationPolicy;
@@ -53,7 +52,7 @@ namespace GeneralGameDevKit.StatSystem
         [SerializeField] public int targetModifierIdx;
 
         [SerializeField] public float value;
-        [SerializeField, KeyTable("KeyTableAsset_DynamicParameters")] public KeyString valueSourceKey;
+        [SerializeField, KeyTable("KeyTableAsset_DynamicParameters")] public string valueSourceKey;
     }
     
     public enum OverrideSourceType

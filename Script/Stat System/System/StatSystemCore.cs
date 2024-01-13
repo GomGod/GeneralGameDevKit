@@ -45,13 +45,13 @@ namespace GeneralGameDevKit.StatSystem
                     
                     var valueToApply = mod.CalcPolicy switch
                     {
-                        StatModifier.ModCalculationPolicy.CalcWithBase => GetBaseValue(mod.TargetStatID.GetKeyString()),
-                        StatModifier.ModCalculationPolicy.CalcWithResult => GetStatApplyValue(mod.TargetStatID.GetKeyString()),
+                        StatModifier.ModCalculationPolicy.CalcWithBase => GetBaseValue(mod.TargetStatID),
+                        StatModifier.ModCalculationPolicy.CalcWithResult => GetStatApplyValue(mod.TargetStatID),
                         _ => throw new ArgumentOutOfRangeException()
                     };
 
                     valueToApply = CalcTwoValue(valueToApply, mod.Coefficient, mod.CalcOperator);
-                    ModifyStatBaseValue(mod.TargetStatID.GetKeyString(), valueToApply);
+                    ModifyStatBaseValue(mod.TargetStatID, valueToApply);
                     break;
                 case StatModifier.ModificationPolicy.Temporary:
                     mod.TimeStamp = IssueTimestamp();
