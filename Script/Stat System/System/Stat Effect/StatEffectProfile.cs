@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Developer.GeneralGameDevKit.TagSystem;
 using GeneralGameDevKit.ValueTableSystem;
 using UnityEngine;
@@ -29,22 +28,15 @@ namespace GeneralGameDevKit.StatSystem
         [SerializeField] public DurationPolicy durationPolicy;
         
         [Header("Stacking")]
+        [SerializeField] public bool useStacking;
         [SerializeField] public int maxStack;
-        [SerializeField] public StackingPolicy stackingPolicy;
         [SerializeField] public StackOutPolicy stackOutPolicy;
         [SerializeField] public StackDurationPolicy stackDurationPolicy;
-        
-        public enum StackingPolicy
-        {
-            Independent,
-            CountStackOnCaster,
-            CountStackOnReceiver
-        }
 
         public enum StackDurationPolicy
         {
-            NeverRefresh,
-            RefreshOnApply
+            Independent,
+            Combined
         }
 
         public enum StackOutPolicy

@@ -7,18 +7,21 @@ using UnityEngine;
 namespace GeneralGameDevKit.StatSystem
 {
     /// <summary>
-    /// Combine multiple StatEffectProfiles.
+    /// Set of StatEffectProfiles.
+    /// Stat effect instances created by profiles will be applied with the same group policy settings.
     /// </summary>
     [CreateAssetMenu(menuName = "General Game Dev Kit/Stat System/Stat Effect Group", fileName = "StatEffectProfileGroup")]
     public class StatEffectGroup : ScriptableObject
     {
         [Header("Essential")] 
-        [SerializeField] private string groupId;
+        [SerializeField, Tooltip("Member Effect profiles will replace by group Id & index")] 
+        private string groupId; //Id of this effect group. Ids must be unique or stacking will not work properly.
 
+        //Resource fields can be used differently depending on the system.
         [Header("Text Resources")] 
-        [SerializeField] private string groupIconId;
-        [SerializeField] private string groupName;
-        [SerializeField, TextArea] public string groupDesc;
+        [SerializeField] private string groupIconId; //resource id
+        [SerializeField] private string groupName; //name of effect group
+        [SerializeField, TextArea] public string groupDesc; //description of effect group
         
         [Header("Profiles")]
         [SerializeField] private List<StatEffectProfile> effectProfilesToApply;
@@ -38,7 +41,7 @@ namespace GeneralGameDevKit.StatSystem
         [SerializeField] public OverrideSourceType stackOverrideSourceType;
         [SerializeField] public int constMaxStack;
         [SerializeField, KeyTable("KeyTableAsset_DynamicParameters")] public string dynamicMaxStack;
-        [SerializeField] public StatEffectProfile.StackingPolicy stackingPolicy;
+        [SerializeField] public bool useStacking;
         [SerializeField] public StatEffectProfile.StackOutPolicy stackOutPolicy;
         [SerializeField] public StatEffectProfile.StackDurationPolicy stackDurationPolicy;
         
