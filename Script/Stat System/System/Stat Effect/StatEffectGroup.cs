@@ -28,8 +28,7 @@ namespace GeneralGameDevKit.StatSystem
         [SerializeField] private List<ModifierOverrideData> effectModifierOverrideData;
         
         [Header("Override Settings")]
-        [SerializeField, KeyTable("KeyTableAsset_Tags")]
-        public List<DevKitTag> effectTags;
+        [SerializeField] public List<DevKitTag> effectTags;
 
         [Header("Duration")]
         [SerializeField] public StatEffectProfile.DurationPolicy durationPolicy;

@@ -20,8 +20,7 @@ namespace GeneralGameDevKit.StatSystem
         [SerializeField] public List<StatModifier> statModifiers;
 
         [Header("Tags")] 
-        [SerializeField, KeyTable("KeyTableAsset_Tags")]
-        public List<DevKitTag> effectTags;
+        [SerializeField] public List<DevKitTag> effectTags;
         
         [Header("Duration")] 
         [SerializeField] public float duration;
