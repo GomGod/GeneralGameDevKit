@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Developer.GeneralGameDevKit.TagSystem;
+using GeneralGameDevKit.ValueTableSystem;
 using UnityEngine;
 
 namespace GeneralGameDevKit.StatSystem
@@ -9,22 +10,53 @@ namespace GeneralGameDevKit.StatSystem
     //current applying stat effects
     //modify context processing
     //modifier processing (buff/debuff)
-    public class BaseStatObject : MonoBehaviour
+    public abstract class BaseStatObject : MonoBehaviour
     {
-        private DevKitTagContainer _permanentTags;
-        private StatSystemCore _statSystemCore;
-
-        public float GetStatBaseValue(string identifier) => _statSystemCore.GetBaseValue(identifier);
-        public float GetStatApplyValue(string identifier) => _statSystemCore.GetStatApplyValue(identifier);
+        protected const string PersonalTablePrefix = "%StatSystem%ptable%";
+        
+        [SerializeField] protected DevKitTagContainer _permanentTags;
+        
+        protected readonly StatSystemCore StatSystemCore = new();
+        
+        public void Awake()
+        {
+            KeyValueTableManager.Instance.AddNewTable(GetPersonalTableKey());
+            InitializeTask();
+        }
 
         public void InitializeStats(Dictionary<string, float> statCollections)
         {
             foreach (var (id, val) in statCollections)
             {
-                _statSystemCore.ModifyStatBaseValue(id, val);
+                StatSystemCore.ModifyStatBaseValue(id, val);
             }
         }
+
+        public KeyValueTable GetPersonalTable()
+        {
+            var tableKey = GetPersonalTableKey();
+            if (KeyValueTableManager.Instance.IsTableSet(tableKey))
+            {
+                KeyValueTableManager.Instance.AddNewTable(tableKey);
+            }
+            return KeyValueTableManager.Instance.GetKeyValueTable(tableKey);  
+        }
         
+        public float GetStatBaseValue(string identifier)
+        {
+            return StatSystemCore.GetBaseValue(identifier);
+        }
+
+        public float GetStatApplyValue(string identifier)
+        {
+            return StatSystemCore.GetStatApplyValue(identifier);
+        }
+        
+        public virtual void InitializeTask() {}
+        public abstract string GetUniqueObjectKey();
+        protected virtual string GetPersonalTableKey() => $"{PersonalTablePrefix}{GetUniqueObjectKey()}";
+        
+        public abstract void OnStatChanged(string targetStat, float prev, float after);
         
     }
 }
