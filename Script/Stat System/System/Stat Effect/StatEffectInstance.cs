@@ -8,48 +8,49 @@ namespace GeneralGameDevKit.StatSystem
     public class StatEffectInstance
     {
         public event Action OnExpired;
-        public readonly BaseStatObject casterObject;
+        public BaseStatObject CasterObject;
         
-        public readonly string groupId;
-        public readonly string effectId;
+        public string GroupId;
+        public string EffectId;
         
-        public readonly string effectIconId;
-        public readonly string effectName;
+        public string EffectName;
+        public string EffectDesc;
+        public string EffectIconId;
         
-        public readonly List<DevKitTag> effectTagsToApply = new();
-        public readonly List<StatModifier> modifiersToApply = new();
+        public List<DevKitTag> EffectTagsToApply = new();
+        public List<StatModifier> ModifiersToApply = new();
 
-        public readonly StatEffectProfile.DurationPolicy durationPolicyApply;
-        public readonly float durationApply;
+        public StatEffectProfile.DurationPolicy DurationPolicy;
+        public float Duration;
         
-        public readonly int maxStack;
-        public bool useStackingApply;
-        public readonly StatEffectProfile.StackOutPolicy stackOutPolicyApply;
-        public readonly StatEffectProfile.StackDurationPolicy stackDurationPolicyApply;
+        public int MaxStack;
+        public bool UseStacking;
+        public StatEffectProfile.StackOutPolicy StackOutPolicy;
+        public StatEffectProfile.StackDurationPolicy StackDurationPolicy;
         
-        public readonly List<float> currentStackDuration = new();
-        private int currentStackCnt;
+        public readonly List<float> CurrentStackDuration = new();
+        private int _currentStackCnt;
 
         public float GetRepresentDuration()
         {
-            return durationPolicyApply switch
+            return DurationPolicy switch
             {
-                StatEffectProfile.DurationPolicy.Manual => currentStackDuration.Max(),
+                StatEffectProfile.DurationPolicy.Manual => CurrentStackDuration.Max(),
                 StatEffectProfile.DurationPolicy.Infinite => float.MaxValue,
                 _ => throw new ArgumentOutOfRangeException()
             };
         }
         
-        public int GetCurrentStackCount() => currentStackCnt;
+        public int GetCurrentStackCount() => _currentStackCnt;
 
         public bool AddStack()
         {
-            if (!useStackingApply)
+            if (!UseStacking)
                 return false;
-            if (currentStackCnt >= maxStack)
+            if (_currentStackCnt >= MaxStack)
                 return false;
 
-            currentStackCnt += 1;
+            _currentStackCnt += 1;
             return true;
         }
 
@@ -67,39 +68,39 @@ namespace GeneralGameDevKit.StatSystem
         /// </returns>
         public bool TickDuration(float t)
         {
-            switch (stackDurationPolicyApply)
+            switch (StackDurationPolicy)
             {
             case StatEffectProfile.StackDurationPolicy.Independent:
-                for (var i = 0; i < maxStack; i++)
+                for (var i = 0; i < MaxStack; i++)
                 {
-                    currentStackDuration[i] -= t;
+                    CurrentStackDuration[i] -= t;
                 }
                 break;
             case StatEffectProfile.StackDurationPolicy.Combined:
-                currentStackDuration[0] -= t;
+                CurrentStackDuration[0] -= t;
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
             }
 
-            var removedCnt = currentStackDuration.RemoveAll(dur => dur <= 0);
+            var removedCnt = CurrentStackDuration.RemoveAll(dur => dur <= 0);
             var isRemovedStack = removedCnt > 0;
 
             if (isRemovedStack)
             {
-                switch (stackDurationPolicyApply)
+                switch (StackDurationPolicy)
                 {
                 case StatEffectProfile.StackDurationPolicy.Independent:
-                    currentStackCnt -= removedCnt;
+                    _currentStackCnt -= removedCnt;
                     break;
                 case StatEffectProfile.StackDurationPolicy.Combined:
-                    switch (stackOutPolicyApply)
+                    switch (StackOutPolicy)
                     {
                     case StatEffectProfile.StackOutPolicy.RemoveSingleStack:
-                        currentStackCnt -= 1;
+                        _currentStackCnt -= 1;
                         break;
                     case StatEffectProfile.StackOutPolicy.ClearAllStack:
-                        currentStackCnt = 0;
+                        _currentStackCnt = 0;
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -110,12 +111,12 @@ namespace GeneralGameDevKit.StatSystem
                 }
             }
 
-            if (currentStackCnt <= 0)
+            if (_currentStackCnt <= 0)
             {
                 NoticeExpired();
             }
 
-            return currentStackCnt == 0;
+            return _currentStackCnt == 0;
         }
     }
 }

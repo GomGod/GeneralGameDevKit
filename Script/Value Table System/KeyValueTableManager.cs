@@ -8,7 +8,7 @@ namespace GeneralGameDevKit.ValueTableSystem
     /// </summary>
     public class KeyValueTableManager : NonMonoSingleton<KeyValueTableManager>
     {
-        private Dictionary<string, KeyValueTable> _keyValueTables = new();
+        private readonly Dictionary<string, KeyValueTable> _keyValueTables = new();
 
         /// <summary>
         /// Add new table.
@@ -23,6 +23,11 @@ namespace GeneralGameDevKit.ValueTableSystem
             }
             
             //todo : error handling
+        }
+
+        public bool IsTableSet(string tableName)
+        {
+            return _keyValueTables.ContainsKey(tableName);
         }
 
         /// <summary>

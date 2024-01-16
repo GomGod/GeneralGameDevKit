@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Developer.GeneralGameDevKit.TagSystem;
 using UnityEngine;
 
@@ -31,6 +32,26 @@ namespace GeneralGameDevKit.StatSystem
         [SerializeField] public StackOutPolicy stackOutPolicy;
         [SerializeField] public StackDurationPolicy stackDurationPolicy;
 
+        public StatEffectInstance BuildEffectInstance(BaseStatObject caster)
+        {
+            return new StatEffectInstance
+            {
+                CasterObject = caster,
+                EffectId = profileID,
+                EffectIconId = effectIconId,
+                EffectName = effectName,
+                EffectDesc = effectDesc,
+                ModifiersToApply = statModifiers.Select(mod => mod.GetCopy()).ToList(),
+                EffectTagsToApply = new List<DevKitTag>(effectTags),
+                Duration = duration,
+                DurationPolicy = durationPolicy,
+                UseStacking = useStacking,
+                MaxStack = maxStack,
+                StackOutPolicy = stackOutPolicy,
+                StackDurationPolicy = stackDurationPolicy
+            };
+        }
+        
         public enum StackDurationPolicy
         {
             Independent,
