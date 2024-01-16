@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Developer.GeneralGameDevKit.Editor;
+using Developer.GeneralGameDevKit.TagSystem;
 using UnityEditor;
 using UnityEngine;
 
@@ -17,12 +18,35 @@ namespace GeneralGameDevKit.ValueTableSystem.Internal.Editor
             return defaultHeight * 2 + Margin * 3;
         }
 
+        private string GetStringValueFromProperty(SerializedProperty property)
+        {
+            return property.type switch
+            {
+                nameof(DevKitTag) => property.FindPropertyRelative(DevKitTag.TagKeyFieldName).stringValue,
+                _ => property.stringValue
+            };
+        }
+
+        private void SetStringValueAtProperty(SerializedProperty property, string content)
+        {
+            switch (property.type)
+            {
+                case nameof(DevKitTag):
+                    property.FindPropertyRelative(DevKitTag.TagKeyFieldName).stringValue = content;
+                    break;
+                default:
+                    property.stringValue = content;
+                    break;
+
+            }
+        }
+        
+        
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             var customAttributes = fieldInfo.GetCustomAttributes(false).ToList();
-
             var keyTableAttributeIdx = customAttributes.FindIndex(o => o is KeyTableAttribute);
-            KeyTableAttribute keyTableAttribute = null;
+            KeyTableAttribute keyTableAttribute;
 
             if (keyTableAttributeIdx < 0)
             {
@@ -47,7 +71,8 @@ namespace GeneralGameDevKit.ValueTableSystem.Internal.Editor
                 return;
             }
 
-            var currentSelected = paramsList.IndexOf(property.stringValue);
+            var currentStringValue = GetStringValueFromProperty(property);
+            var currentSelected = paramsList.IndexOf(currentStringValue);
             if (currentSelected < 0)
             {
                 currentSelected = 0;
@@ -66,10 +91,10 @@ namespace GeneralGameDevKit.ValueTableSystem.Internal.Editor
             EditorGUI.LabelField(labelRect, $"Table Source : {keyTableAttribute.AssetName}", EditorStyles.boldLabel);
             currentSelected = EditorGUI.Popup(popupRect, $"{property.displayName}", currentSelected, paramsList.ToArray());
 
-            if (EditorGUI.EndChangeCheck())
-            {
-                property.stringValue = paramsList[currentSelected];
-            }
+            if (!EditorGUI.EndChangeCheck()) return;
+            
+            var newSelectedKey = paramsList[currentSelected];
+            SetStringValueAtProperty(property, newSelectedKey);
         }
     }
 }

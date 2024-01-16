@@ -8,6 +8,8 @@ namespace Developer.GeneralGameDevKit.TagSystem
     [Serializable]
     public class DevKitTag
     {
+        public static string TagKeyFieldName => nameof(tagKey);
+        
         [SerializeField, KeyTable("KeyTableAsset_Tags")] private string tagKey;
         private static Dictionary<string, DevKitTag> _globalTagCollection = new();
         private string _fullPathOfTag;
