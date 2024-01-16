@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Debug = UnityEngine.Debug;
 
@@ -12,6 +13,9 @@ namespace GeneralGameDevKit.StatSystem
     /// </summary>
     public class StatSystemCore
     {
+        public event Action<StatInfo, float> OnStatBaseValueChanged; //p0: statInfo, p1: prev-value
+        public event Action<StatInfo, float> OnStatApplyValueChanged; //p0: statInfo, p1 :apply-value
+         
         private readonly Dictionary<string, StatInfo> _statMap = new();
         private readonly List<StatModifier> _currentModifiers = new();
         private uint _currentModifierTimestamp;
@@ -42,7 +46,6 @@ namespace GeneralGameDevKit.StatSystem
             switch (mod.ModPolicy)
             {
                 case StatModifier.ModificationPolicy.Instant:
-                    
                     var valueToApply = mod.CalcPolicy switch
                     {
                         StatModifier.ModCalculationPolicy.CalcWithBase => GetBaseValue(mod.TargetStatID),
@@ -56,12 +59,26 @@ namespace GeneralGameDevKit.StatSystem
                 case StatModifier.ModificationPolicy.Temporary:
                     mod.TimeStamp = IssueTimestamp();
                     _currentModifiers.Add(mod);
+                    if (_statMap.TryGetValue(mod.TargetStatID, out var statInfo))
+                    {
+                        OnStatApplyValueChanged?.Invoke(statInfo, GetStatApplyValue(mod.TargetStatID));
+                    }
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
-            }
+            } 
         }
-        
+
+        public bool RemoveStatModifier(StatModifier mod)
+        {
+            var removeResult = _currentModifiers.Remove(mod);
+            if (_statMap.TryGetValue(mod.TargetStatID, out var targetStatInfo))
+            {
+                OnStatApplyValueChanged?.Invoke(targetStatInfo, GetStatApplyValue(mod.TargetStatID));
+            }
+            return removeResult;
+        }
+
         /// <summary>
         /// Modify the base stat value.
         /// </summary>
@@ -71,18 +88,21 @@ namespace GeneralGameDevKit.StatSystem
         {
             if (!_statMap.TryGetValue(targetID, out var targetStat))
             {
-                _statMap.Add(targetID, new StatInfo
+                targetStat = new StatInfo
                 {
                     ID = targetID,
-                    statValue = value
-                });
-                Debug.LogWarning($"New stat value added. [{targetID} : {value}]"); //todo : replace to error handling method
-                return;
+                    StatValue = 0
+                };
+                _statMap.Add(targetID, targetStat);
+                Debug.Log($"New stat value added. [{targetID} : {value.ToString(CultureInfo.InvariantCulture)}]");
             }
 
-            targetStat.statValue = value;
+            var prevValue = targetStat.StatValue;
+            targetStat.StatValue = value;
+            OnStatBaseValueChanged?.Invoke(targetStat, prevValue);
+            OnStatApplyValueChanged?.Invoke(targetStat, GetStatApplyValue(targetStat.ID));
         }
-        
+
         /// <summary>
         /// Get the stat value not modified. (Base Stat Value)
         /// </summary>
@@ -91,7 +111,7 @@ namespace GeneralGameDevKit.StatSystem
         public float GetBaseValue(string targetId)
         {
             if (_statMap.TryGetValue(targetId, out var targetStat)) 
-                return targetStat.statValue;
+                return targetStat.StatValue;
             
             Debug.LogWarning("There is no matching stat value."); //todo : replace to error handling method
             return 0.0f;
@@ -120,8 +140,8 @@ namespace GeneralGameDevKit.StatSystem
                 return firstCompare != 0 ? firstCompare : ma.TimeStamp.CompareTo(mb.TimeStamp);
             });
 
-            var baseValue = targetStat.statValue;
-            var ret = targetStat.statValue;
+            var baseValue = targetStat.StatValue;
+            var ret = targetStat.StatValue;
             foreach (var mod in _modifiersForCalc)
             {
                 switch (mod.CalcPolicy)
@@ -180,7 +200,7 @@ namespace GeneralGameDevKit.StatSystem
     public class StatInfo
     {
         public string ID; //Unique Id for indicate stat. (hp, atk, def.... or unique numbers)
-        public float statValue;
+        public float StatValue;
     }
 
     /// <summary>

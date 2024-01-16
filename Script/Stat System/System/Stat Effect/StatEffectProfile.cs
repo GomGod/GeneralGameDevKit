@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Developer.GeneralGameDevKit.TagSystem;
-using GeneralGameDevKit.ValueTableSystem;
 using UnityEngine;
 
 namespace GeneralGameDevKit.StatSystem
