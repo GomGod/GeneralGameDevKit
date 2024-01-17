@@ -10,6 +10,42 @@ namespace Developer.GeneralGameDevKit.TagSystem
     {
         [SerializeField] private List<DevKitTag> tagCollection = new();
 
+        public List<DevKitTag> GetAllTags() => new(tagCollection);
+
+        public void MergeContainer(DevKitTagContainer other)
+        {
+            AddTags(other.GetAllTags());
+        }
+
+        public void AddTag(DevKitTag tag)
+        {
+            tagCollection.Add(tag);
+        }
+        public void AddTags(IEnumerable<DevKitTag> tags)
+        {
+            foreach (var tag in tags)
+            {
+                AddTag(tag);
+            }
+        }
+
+        public void RemoveTag(DevKitTag tag)
+        {
+            var idx = tagCollection.FindIndex(tag.IsEqual);
+            if (idx >= 0)
+            {
+                tagCollection.RemoveAt(idx);
+            }
+        }
+
+        public void RemoveTags(IEnumerable<DevKitTag> tags)
+        {
+            foreach (var tag in tags)
+            {
+                RemoveTag(tag);
+            }
+        }
+
         public bool HasSuperTagAny(DevKitTag tag)
         {
             return tagCollection.Any(tag.IsSubTagOf);
