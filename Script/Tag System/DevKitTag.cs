@@ -14,6 +14,8 @@ namespace Developer.GeneralGameDevKit.TagSystem
         private static Dictionary<string, DevKitTag> _globalTagCollection = new();
         private string _fullPathOfTag;
         private string[] _tagStructure;
+
+        public string TagKey => tagKey;
         
         public static void LoadTagCollection(IEnumerable<DevKitTag> tagCollection)
         {

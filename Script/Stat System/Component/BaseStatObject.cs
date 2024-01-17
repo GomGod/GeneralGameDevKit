@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Developer.GeneralGameDevKit.TagSystem;
 using GeneralGameDevKit.ValueTableSystem;
@@ -7,9 +8,11 @@ namespace GeneralGameDevKit.StatSystem
 {
     public abstract class BaseStatObject : MonoBehaviour
     {
+        [SerializeField] protected int id;
+        [SerializeField] protected DevKitTagContainer _permanentTags;
+        
         protected const string PersonalTablePrefix = "%StatSystem%ptable%";
         
-        [SerializeField] protected DevKitTagContainer _permanentTags;
         protected DevKitTagContainer _temporaryTags;
         
         protected List<StatEffectInstance> currentEffectInstances = new();
@@ -111,12 +114,42 @@ namespace GeneralGameDevKit.StatSystem
                 currentEffectInstances.Remove(instanceToRemove);
             }
         }
+
+        public void SetOnTagUpdatedEventCallback(Action<DevKitTag, int, int> callback)
+        {
+            _permanentTags.OnTagUpdate += callback;
+            _temporaryTags.OnTagUpdate += callback;
+        }
+
+        public void RemoveOnTagUpdatedEventCallback(Action<DevKitTag, int, int> callback)
+        {
+            _permanentTags.OnTagUpdate -= callback;
+            _temporaryTags.OnTagUpdate -= callback;
+        }
+
+        public void SetOnApplyStatUpdatedEventCallback(Action<StatInfo, float> callback)
+        {
+            StatSystemCore.OnStatApplyValueChanged += callback;
+        }
+        
+        public void RemoveOnApplyStatUpdatedEventCallback(Action<StatInfo, float> callback)
+        {
+            StatSystemCore.OnStatApplyValueChanged -= callback;
+        }
+
+        public void SetOnBaseStatUpdatedEventCallback(Action<StatInfo, float> callback)
+        {
+            StatSystemCore.OnStatBaseValueChanged += callback;
+        }
+        
+        public void RemoveOnBaseStatUpdatedEventCallback(Action<StatInfo, float> callback)
+        {
+            StatSystemCore.OnStatBaseValueChanged -= callback;
+        }
         
         public virtual void InitializeTask() {}
         public abstract string GetUniqueObjectKey();
         protected virtual string GetPersonalTableKey() => $"{PersonalTablePrefix}{GetUniqueObjectKey()}";
-        
-        public abstract void OnStatChanged(string targetStat, float prev, float after);
         
     }
 }

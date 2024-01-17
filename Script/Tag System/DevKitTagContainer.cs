@@ -8,8 +8,12 @@ namespace Developer.GeneralGameDevKit.TagSystem
     [Serializable]
     public class DevKitTagContainer
     {
+        /// <summary>
+        /// p1 : tag, p2 : prev, p3 : after
+        /// </summary>
+        public Action<DevKitTag, int, int> OnTagUpdate;
+        
         [SerializeField] private List<DevKitTag> tagCollection = new();
-
         public List<DevKitTag> GetAllTags() => new(tagCollection);
 
         public void MergeContainer(DevKitTagContainer other)
