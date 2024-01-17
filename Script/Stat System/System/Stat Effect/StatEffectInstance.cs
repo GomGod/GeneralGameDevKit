@@ -7,7 +7,7 @@ namespace GeneralGameDevKit.StatSystem
 {
     public class StatEffectInstance
     {
-        public event Action OnExpired;
+        public event Action<StatEffectInstance> OnExpired;
         public BaseStatObject CasterObject;
         
         public string GroupId;
@@ -43,11 +43,13 @@ namespace GeneralGameDevKit.StatSystem
         
         public int GetCurrentStackCount() => _currentStackCnt;
 
-        public bool AddStack()
+        public bool TryAddStack(StatEffectInstance fxInstance)
         {
             if (!UseStacking)
                 return false;
             if (_currentStackCnt >= MaxStack)
+                return false;
+            if (!fxInstance.EffectId.Equals(EffectId))
                 return false;
 
             _currentStackCnt += 1;
@@ -56,7 +58,7 @@ namespace GeneralGameDevKit.StatSystem
 
         private void NoticeExpired()
         {
-            OnExpired?.Invoke();
+            OnExpired?.Invoke(this);
         }
 
         /// <summary>
@@ -110,12 +112,8 @@ namespace GeneralGameDevKit.StatSystem
                     throw new ArgumentOutOfRangeException();
                 }
             }
-
-            if (_currentStackCnt <= 0)
-            {
-                NoticeExpired();
-            }
-
+            
+            NoticeExpired();
             return _currentStackCnt == 0;
         }
     }

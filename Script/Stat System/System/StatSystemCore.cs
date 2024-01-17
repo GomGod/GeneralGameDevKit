@@ -37,6 +37,11 @@ namespace GeneralGameDevKit.StatSystem
             }
         }
 
+        public void GetAllStatModifiers(ref List<StatModifier> collectionToReceive)
+        {
+            collectionToReceive.AddRange(_modifiersForCalc);
+        }
+
         /// <summary>
         /// Add stat modifier
         /// </summary>
