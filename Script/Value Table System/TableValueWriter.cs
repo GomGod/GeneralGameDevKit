@@ -6,13 +6,13 @@ namespace GeneralGameDevKit.ValueTableSystem
     [Serializable]
     public class TableValueWriter
     {
-        [SerializeField, KeyTable("KeyValueTable_DynamicParameters")] private string targetKey;
+        [SerializeField, KeyTable("KeyTableAsset_DynamicParameters")] private string targetKey;
         [SerializeField] private TargetDataType targetDataType;
         
         [SerializeField] private float floatVal;
         [SerializeField] private int intVal;
         [SerializeField] private bool boolVal;
-        [SerializeField, KeyTable("KeyValueTable_DynamicParameters")] private string sourceKey;
+        [SerializeField, KeyTable("KeyTableAsset_DynamicParameters")] private string sourceKey;
 
         public string GetTargetKeyString() => targetKey;
         

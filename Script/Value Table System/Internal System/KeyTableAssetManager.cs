@@ -33,7 +33,7 @@ namespace GeneralGameDevKit.ValueTableSystem.Internal
         /// <returns>Collections of key path strings.</returns>
         public IEnumerable<string> GetAllKeys(string containerName)
         {
-            return _loadedTableAssets.TryGetValue(containerName, out var asset) ? asset.GetAllKeys() : null;
+            return _loadedTableAssets.TryGetValue(containerName, out var asset) ? asset.GetAllKeys() : new List<string>();
         }
     }
 }
