@@ -14,6 +14,9 @@ namespace Developer.GeneralGameDevKit.TagSystem
         public Action<DevKitTag, int, int> OnTagUpdate;
         
         [SerializeField] private List<DevKitTag> tagCollection = new();
+
+        private Dictionary<DevKitTag, int> _tempCountDictionary =new();
+        
         public List<DevKitTag> GetAllTags() => new(tagCollection);
 
         public void MergeContainer(DevKitTagContainer other)
@@ -21,32 +24,83 @@ namespace Developer.GeneralGameDevKit.TagSystem
             AddTags(other.GetAllTags());
         }
 
+        public int GetTagCount(DevKitTag tag)
+        {
+            return tagCollection.Count(tag.IsEqual);
+        }
+
+        public void ClearContainer()
+        {
+            _tempCountDictionary.Clear();
+            foreach (var tag in tagCollection.ToHashSet())
+            {
+                _tempCountDictionary.Add(tag, GetTagCount(tag));
+            }
+            
+            tagCollection.Clear();
+            foreach (var (tag, prevCnt) in _tempCountDictionary)
+            {
+                OnTagUpdate?.Invoke(tag, prevCnt, 0);
+            }
+        }
+        
         public void AddTag(DevKitTag tag)
         {
+            var prevCnt = GetTagCount(tag);
             tagCollection.Add(tag);
+            OnTagUpdate?.Invoke(tag, prevCnt, prevCnt+1);
         }
         public void AddTags(IEnumerable<DevKitTag> tags)
         {
-            foreach (var tag in tags)
+            _tempCountDictionary.Clear();
+            var tagsToAdd = tags.ToList();
+            foreach (var tag in tagsToAdd.ToHashSet())
             {
-                AddTag(tag);
+                _tempCountDictionary.Add(tag, GetTagCount(tag));
+            }
+            
+            foreach (var tag in tagsToAdd)
+            {
+                tagCollection.Add(tag);
+            }
+
+            foreach (var (tag, prevCount) in _tempCountDictionary)
+            {
+                OnTagUpdate?.Invoke(tag, prevCount, GetTagCount(tag));
             }
         }
 
         public void RemoveTag(DevKitTag tag)
         {
             var idx = tagCollection.FindIndex(tag.IsEqual);
-            if (idx >= 0)
-            {
-                tagCollection.RemoveAt(idx);
-            }
+            if (idx < 0) return;
+            
+            var prevCnt = GetTagCount(tag);
+            tagCollection.RemoveAt(idx);
+            OnTagUpdate?.Invoke(tag, prevCnt, prevCnt - 1);
         }
 
         public void RemoveTags(IEnumerable<DevKitTag> tags)
         {
-            foreach (var tag in tags)
+            _tempCountDictionary.Clear();
+            var tagsToRemove = tags.ToList();
+            foreach (var tag in tagsToRemove.ToHashSet().Where(tag => tagCollection.FindIndex(tag.IsEqual) >= 0))
             {
-                RemoveTag(tag);
+                _tempCountDictionary.Add(tag, GetTagCount(tag));
+            }
+
+            foreach (var tag in tagsToRemove)
+            {
+                var idx = tagCollection.FindIndex(tag.IsEqual);
+                if (idx >= 0)
+                {
+                    tagCollection.RemoveAt(idx);
+                }
+            }
+
+            foreach (var (tag, prev) in _tempCountDictionary)
+            {
+                OnTagUpdate?.Invoke(tag, prev, GetTagCount(tag));
             }
         }
 
@@ -68,6 +122,11 @@ namespace Developer.GeneralGameDevKit.TagSystem
         public bool IsSubContainerOf(DevKitTagContainer container)
         {
             return tagCollection.All(container.HasExactTag);
+        }
+
+        public bool IsIntersectionAny(DevKitTagContainer container)
+        {
+            return tagCollection.Any(container.HasExactTag);
         }
     }
 }
