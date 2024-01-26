@@ -14,6 +14,7 @@ namespace Developer.GeneralGameDevKit.TagSystem
         private static Dictionary<string, DevKitTag> _globalTagCollection = new();
         private string _fullPathOfTag;
         private string[] _tagStructure;
+        private bool _initialized;
 
         public string TagKey => tagKey;
         
@@ -27,22 +28,38 @@ namespace Developer.GeneralGameDevKit.TagSystem
         
         public static void LoadTag(DevKitTag tag)
         {
-            tag.InitializeTag();
-            _globalTagCollection.Add(tag._fullPathOfTag, tag);
+            if (!_globalTagCollection.TryAdd(tag._fullPathOfTag, tag))
+            {
+                Debug.LogWarning("Duplicated tag loading");
+            }
+            else
+            {
+                Debug.Log($"Tag : {tag.tagKey} loaded.");
+            }
         }
 
         internal DevKitTag(string path)
         {
+            tagKey = path;
             _fullPathOfTag = path;
             _tagStructure = _fullPathOfTag.Split('/');
+            _initialized = true;
         }
-        
-        private void InitializeTag()
+
+        private void CheckInitialization()
         {
+            if (_initialized)
+                return;
+            if (!_globalTagCollection.ContainsKey(tagKey))
+            {
+                throw new Exception($"There is no tag({tagKey}). Load tag first.");
+            }
+            
             _fullPathOfTag = tagKey;
             _tagStructure = _fullPathOfTag.Split('/');
+            _initialized = true;
         }
-        
+
         public static DevKitTag RequestTag(string fullPathOfTag)
         {
             if (_globalTagCollection.TryGetValue(fullPathOfTag, out var ret))
@@ -59,6 +76,7 @@ namespace Developer.GeneralGameDevKit.TagSystem
         /// <returns></returns>
         public string GetFullPathOfTag()
         {
+            CheckInitialization();
             return _fullPathOfTag;
         }
 
@@ -68,6 +86,7 @@ namespace Developer.GeneralGameDevKit.TagSystem
         /// <returns>array of strings that make up this tag.</returns>
         public string[] GetTagStructure()
         {
+            CheckInitialization();
             return _tagStructure;
         }
 
@@ -79,6 +98,7 @@ namespace Developer.GeneralGameDevKit.TagSystem
         /// <returns>Result of sub tag test</returns>
         public bool IsSubTagOf(DevKitTag otherTag)
         {
+            CheckInitialization();
             var otherTagStructure = otherTag.GetTagStructure();
             if (_tagStructure.Length > otherTagStructure.Length)
             {
@@ -100,6 +120,7 @@ namespace Developer.GeneralGameDevKit.TagSystem
         /// <returns>Result of equal tag test</returns>
         public bool IsEqual(DevKitTag otherTag)
         {
+            CheckInitialization();
             return otherTag.TagKey.Equals(tagKey);
         }
 
@@ -110,6 +131,7 @@ namespace Developer.GeneralGameDevKit.TagSystem
         /// <returns>Result of test</returns>
         public bool IsSubTagOfAnyMember(DevKitTagContainer container)
         {
+            CheckInitialization();
             return container.HasSuperTagAny(this);
         }
 
@@ -120,6 +142,7 @@ namespace Developer.GeneralGameDevKit.TagSystem
         /// <returns>Result of test</returns>
         public bool IsSubTagOfAllMember(DevKitTagContainer container)
         {
+            CheckInitialization();
             return container.HasSuperTagAll(this);
         }
 
@@ -130,6 +153,7 @@ namespace Developer.GeneralGameDevKit.TagSystem
         /// <returns>Result of test</returns>
         public bool IsExactMemberOf(DevKitTagContainer container)
         {
+            CheckInitialization();
             return container.HasExactTag(this);
         }
     }
