@@ -43,15 +43,25 @@ namespace GeneralGameDevKit.ValueTableSystem
         /// <summary>
         /// Get KeyValueTable matches with tableName.
         /// </summary>
-        /// <param name="tableName"></param>
+        /// <param name="tableName">table name to get</param>
+        /// <param name="autoGen">add new kvTable if failed to get table</param>
         /// <returns></returns>
-        public KeyValueTable GetKeyValueTable(string tableName)
+        public KeyValueTable GetKeyValueTable(string tableName, bool autoGen = true)
         {
             if (_keyValueTables.TryGetValue(tableName, out var table))
                 return table;
-            
+
             //todo : error handling
-            return null;
+            if (!autoGen)
+                return null;
+            
+            AddNewTable(tableName);
+            return _keyValueTables[tableName];
+        }
+
+        public void ClearTable()
+        {
+            _keyValueTables.Clear();
         }
     }
 }

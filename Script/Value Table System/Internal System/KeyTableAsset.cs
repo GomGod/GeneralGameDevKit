@@ -43,6 +43,12 @@ namespace GeneralGameDevKit.ValueTableSystem.Internal
             return _root;
         }
 
+        public void ClearAllKeys()
+        {
+            SetEmptyRoot();
+            keys.Clear();
+        }
+
         private void SetEmptyRoot()
         {
             _root = new KeyNode(RootName);
