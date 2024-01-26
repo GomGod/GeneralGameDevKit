@@ -15,8 +15,11 @@ namespace GeneralGameDevKit.StatSystem
     {
         public event Action<StatInfo, float> OnStatBaseValueChanged; //p0: statInfo, p1: prev-value
         public event Action<StatInfo, float> OnStatApplyValueChanged; //p0: statInfo, p1 :apply-value
-         
+        
         private readonly Dictionary<string, StatInfo> _statMap = new();
+        private readonly Dictionary<string, HashSet<StatConstraints>> _statConstraints = new();
+        private readonly Dictionary<string, HashSet<StatConstraints>> _statConstraintsDependencies = new();
+        
         private readonly List<StatModifier> _currentModifiers = new();
         private uint _currentModifierTimestamp;
 
@@ -42,6 +45,50 @@ namespace GeneralGameDevKit.StatSystem
             collectionToReceive.AddRange(_modifiersForCalc);
         }
 
+        public List<StatModifier> GetAllStatModifiers() => new(_modifiersForCalc);
+
+        public void AddStatConstraints(StatConstraints constraintToAdd)
+        {
+            var targetStatID = constraintToAdd.targetStatID;
+            if (!_statConstraints.ContainsKey(targetStatID))
+            {
+                _statConstraints.Add(targetStatID, new HashSet<StatConstraints>());
+            }
+            _statConstraints[targetStatID].Add(constraintToAdd);
+        }
+
+        public void RemoveStatConstraints(StatConstraints constraintToRemove)
+        {
+            var targetStatID = constraintToRemove.targetStatID;
+            if (!_statConstraints.ContainsKey(targetStatID))
+                return;
+
+            _statConstraints[targetStatID].Remove(constraintToRemove);
+        }
+
+        public void AddConstraintDependency(string targetReactId, StatConstraints constraintsToAdd)
+        {
+            if (_statConstraintsDependencies.ContainsKey(constraintsToAdd.targetStatID) && _statConstraintsDependencies.ContainsKey(targetReactId))
+            {
+                Debug.LogWarning("Cyclic dependency detected. Add failed");
+                return;
+            }
+            
+            if (!_statConstraintsDependencies.ContainsKey(targetReactId))
+            {
+                _statConstraintsDependencies.Add(targetReactId, new HashSet<StatConstraints>());
+            }
+            _statConstraints[targetReactId].Add(constraintsToAdd);
+        }
+
+        public void RemoveConstraintDependency(string targetReactId, StatConstraints constrainsToRemove)
+        {
+            if (!_statConstraints.ContainsKey(targetReactId))
+                return;
+
+            _statConstraints[targetReactId].Remove(constrainsToRemove);
+        }
+        
         /// <summary>
         /// Add stat modifier
         /// </summary>
@@ -74,6 +121,12 @@ namespace GeneralGameDevKit.StatSystem
             } 
         }
 
+        public StatInfo GetStatInfo(string target)
+        {
+            _statMap.TryGetValue(target, out var ret);
+            return ret;
+        }
+
         public bool RemoveStatModifier(StatModifier mod)
         {
             var removeResult = _currentModifiers.Remove(mod);
@@ -83,7 +136,7 @@ namespace GeneralGameDevKit.StatSystem
             }
             return removeResult;
         }
-
+        
         /// <summary>
         /// Modify the base stat value.
         /// </summary>
@@ -103,9 +156,38 @@ namespace GeneralGameDevKit.StatSystem
             }
 
             var prevValue = targetStat.StatValue;
+            if (_statConstraints.TryGetValue(targetID, out var constraints))
+            {
+                value = constraints
+                    .Where(c => c.isBaseStatConstraintsActivated)
+                    .Aggregate(value, (current, constraint) => constraint.ProcessBaseStat(this, current));
+            }
+
             targetStat.StatValue = value;
             OnStatBaseValueChanged?.Invoke(targetStat, prevValue);
             OnStatApplyValueChanged?.Invoke(targetStat, GetStatApplyValue(targetStat.ID));
+        }
+
+        private readonly Dictionary<string, float> _pendedBaseValueChanges = new();
+        public void ResolveConstraintsDependency(string reactId)
+        {
+            if (!_statConstraintsDependencies.TryGetValue(reactId, out var constraintsList))
+                return;
+            _pendedBaseValueChanges.Clear();
+            
+            foreach (var constraints in constraintsList)
+            {
+                if (!_statMap.TryGetValue(constraints.targetStatID, out var targetStat)) 
+                    return;
+                _pendedBaseValueChanges.TryAdd(targetStat.ID, targetStat.StatValue);
+                targetStat.StatValue = constraints.ProcessBaseStat(this, targetStat.StatValue);
+            }
+
+            foreach (var (id, prev) in _pendedBaseValueChanges)
+            {
+                OnStatBaseValueChanged?.Invoke(_statMap[id], prev);
+                OnStatApplyValueChanged?.Invoke(_statMap[id], GetStatApplyValue(id));
+            }
         }
 
         /// <summary>
@@ -118,7 +200,7 @@ namespace GeneralGameDevKit.StatSystem
             if (_statMap.TryGetValue(targetId, out var targetStat)) 
                 return targetStat.StatValue;
             
-            Debug.LogWarning("There is no matching stat value."); //todo : replace to error handling method
+            Debug.Log($"There is no matching stat value. : {targetId}"); //todo : replace to error handling method
             return 0.0f;
 
         }
@@ -133,7 +215,7 @@ namespace GeneralGameDevKit.StatSystem
         {
             if (!_statMap.TryGetValue(targetId, out var targetStat))
             {
-                Debug.LogWarning("There is no matching stat value."); //todo : replace to error handling method
+                Debug.Log($"There is no matching stat value.: {targetId}"); //todo : replace to error handling method
                 return 0.0f;
             }
 
@@ -160,6 +242,13 @@ namespace GeneralGameDevKit.StatSystem
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
+            }
+
+            if (_statConstraints.TryGetValue(targetId, out var constraints))
+            {
+                ret = constraints
+                    .Where(c => c.isApplyStatConstraintsActivated)
+                    .Aggregate(ret, (current, constraint) => constraint.ProcessApplyStat(this, current));
             }
 
             return ret;

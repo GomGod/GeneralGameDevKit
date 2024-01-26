@@ -11,7 +11,7 @@ namespace GeneralGameDevKit.StatSystem
     /// Stat effect instances created by profiles will be applied with the same group policy settings.
     /// </summary>
     [CreateAssetMenu(menuName = "General Game Dev Kit/Stat System/Stat Effect Group", fileName = "StatEffectProfileGroup")]
-    public class StatEffectGroup : ScriptableObject
+    public class StatEffectGroupSO : ScriptableObject
     {
         [Header("Essential")] 
         [SerializeField, Tooltip("Member Effect profiles will replace by group Id & index")] 
@@ -77,7 +77,7 @@ namespace GeneralGameDevKit.StatSystem
 
             return ret;
         }
-
+        
         private static double GetValueOverrideSourceTypeSwitch(float constValue, string dynamicKey, KeyValueTable sourceTable, OverrideSourceType overrideSourceType)
         {
             return overrideSourceType switch
