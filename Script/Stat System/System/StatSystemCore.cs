@@ -55,6 +55,7 @@ namespace GeneralGameDevKit.StatSystem
                 _statConstraints.Add(targetStatID, new HashSet<StatConstraints>());
             }
             _statConstraints[targetStatID].Add(constraintToAdd);
+            ModifyStatBaseValue(targetStatID, GetBaseValue(targetStatID));
         }
 
         public void RemoveStatConstraints(StatConstraints constraintToRemove)
@@ -79,6 +80,7 @@ namespace GeneralGameDevKit.StatSystem
                 _statConstraintsDependencies.Add(targetReactId, new HashSet<StatConstraints>());
             }
             _statConstraints[targetReactId].Add(constraintsToAdd);
+            ResolveConstraintsDependency(targetReactId);
         }
 
         public void RemoveConstraintDependency(string targetReactId, StatConstraints constrainsToRemove)
@@ -164,6 +166,8 @@ namespace GeneralGameDevKit.StatSystem
             }
 
             targetStat.StatValue = value;
+            ResolveConstraintsDependency(targetID);
+            
             OnStatBaseValueChanged?.Invoke(targetStat, prevValue);
             OnStatApplyValueChanged?.Invoke(targetStat, GetStatApplyValue(targetStat.ID));
         }
