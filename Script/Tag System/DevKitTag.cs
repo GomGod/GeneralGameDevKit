@@ -100,19 +100,7 @@ namespace Developer.GeneralGameDevKit.TagSystem
         /// <returns>Result of equal tag test</returns>
         public bool IsEqual(DevKitTag otherTag)
         {
-            var otherTagStructure = otherTag.GetTagStructure();
-            if (otherTagStructure.Length != _tagStructure.Length)
-            {
-                return false;
-            }
-
-            for (var i = 0; i < _tagStructure.Length && i < otherTagStructure.Length; i++)
-            {
-                if (!_tagStructure[i].Equals(otherTagStructure[i]))
-                    return false;
-            }
-
-            return true;
+            return otherTag.TagKey.Equals(tagKey);
         }
 
         /// <summary>
