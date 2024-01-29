@@ -69,6 +69,12 @@ namespace GeneralGameDevKit.StatSystem
 
         public void AddConstraintDependency(string targetReactId, StatConstraints constraintsToAdd)
         {
+            if (targetReactId.Equals(constraintsToAdd.targetStatID))
+            {
+                Debug.LogWarning("Recursive dependency is not allowed. Add failed");
+                return;
+            }
+            
             if (_statConstraintsDependencies.ContainsKey(constraintsToAdd.targetStatID) && _statConstraintsDependencies.ContainsKey(targetReactId))
             {
                 Debug.LogWarning("Cyclic dependency detected. Add failed");
@@ -79,7 +85,7 @@ namespace GeneralGameDevKit.StatSystem
             {
                 _statConstraintsDependencies.Add(targetReactId, new HashSet<StatConstraints>());
             }
-            _statConstraints[targetReactId].Add(constraintsToAdd);
+            _statConstraintsDependencies[targetReactId].Add(constraintsToAdd);
             ResolveConstraintsDependency(targetReactId);
         }
 

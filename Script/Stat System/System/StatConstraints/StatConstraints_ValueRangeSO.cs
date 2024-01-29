@@ -40,6 +40,7 @@ namespace GeneralGameDevKit.StatSystem
         public StatConstraints_ValueRange(StatConstraints_ValueRangeSO baseSO)
         {
             _baseSO = baseSO;
+            targetStatID = baseSO.targetStatId;
             isBaseStatConstraintsActivated = baseSO.applyBaseValue;
             isApplyStatConstraintsActivated = baseSO.applyApplyValue;
         }

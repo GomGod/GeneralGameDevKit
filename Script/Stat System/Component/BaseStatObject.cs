@@ -25,23 +25,30 @@ namespace GeneralGameDevKit.StatSystem
         protected List<StatModifier> temporaryModifiers = new();
         
         public readonly StatSystemCore StatSystemCore = new();
-        
-        public void Awake()
+
+        protected void Awake()
         {
             KeyValueTableManager.Instance.AddNewTable(GetPersonalTableKey());
             foreach (var constraintsSO in statConstraints)
             {
                 constraintsSO.ApplyConstraintsToSystem(StatSystemCore);
             }
+
             StatSystemCore.OnStatApplyValueChanged -= BroadcastApplyStatChangedEvent;
             StatSystemCore.OnStatApplyValueChanged += BroadcastApplyStatChangedEvent;
             StatSystemCore.OnStatBaseValueChanged -= BroadcastBaseStatChangedEvent;
             StatSystemCore.OnStatBaseValueChanged += BroadcastBaseStatChangedEvent;
         }
 
+        public virtual void InitializeTask()
+        {
+        }
+
         public void ForceUpdate(string targetStat)
         {
             var statInfo = StatSystemCore.GetStatInfo(targetStat);
+            if (statInfo == null)
+                return;
             BroadcastApplyStatChangedEvent(statInfo, statInfo.StatValue);
         }
         
@@ -230,7 +237,6 @@ namespace GeneralGameDevKit.StatSystem
             StatSystemCore.OnStatBaseValueChanged -= callback;
         }
         
-        public virtual void InitializeTask() {}
         public abstract string GetUniqueObjectKey();
         protected virtual string GetPersonalTableKey() => $"{PersonalTablePrefix}{GetUniqueObjectKey()}";
         

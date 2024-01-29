@@ -29,9 +29,10 @@ namespace GeneralGameDevKit.StatSystem
         
         public StatConstraints_TypeCast(StatConstraints_TypeCastSO baseSO)
         {
+            _baseSO = baseSO;
+            targetStatID = baseSO.targetStatId;
             isBaseStatConstraintsActivated = baseSO.applyBaseValue;
             isApplyStatConstraintsActivated = baseSO.applyApplyValue;
-            _baseSO = baseSO;
         }
         
         public override float ProcessBaseStat(StatSystemCore targetSystem, float value) => Cast(value);
