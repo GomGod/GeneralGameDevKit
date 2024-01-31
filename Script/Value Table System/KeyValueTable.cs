@@ -86,6 +86,9 @@ namespace GeneralGameDevKit.ValueTableSystem
         /// <returns>Returns the value of the table that matches the key value as double type.</returns>
         public double GetTableValueDouble(string key)
         {
+            if (string.IsNullOrEmpty(key))
+                return 0.0f;
+            
             if (_table.TryGetValue(key, out var ret)) 
                 return ret;
             
