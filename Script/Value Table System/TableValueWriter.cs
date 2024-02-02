@@ -1,4 +1,5 @@
 ﻿using System;
+using GeneralGameDevKit.StatSystem;
 using UnityEngine;
 
 namespace GeneralGameDevKit.ValueTableSystem
@@ -8,6 +9,7 @@ namespace GeneralGameDevKit.ValueTableSystem
     {
         [SerializeField, KeyTable("KeyTableAsset_DynamicParameters")] private string targetKey;
         [SerializeField] private TargetDataType targetDataType;
+        [SerializeField] private WriteOperator writeOperator;
         
         [SerializeField] private float floatVal;
         [SerializeField] private int intVal;
@@ -16,42 +18,47 @@ namespace GeneralGameDevKit.ValueTableSystem
 
         public string GetTargetKeyString() => targetKey;
         
-        public void WriteData(KeyValueTable targetTable)
+        public void WriteData(KeyValueTable targetTable, KeyValueTable sourceTable = null)
         {
-            switch (targetDataType)
+            var valueSourceTable = sourceTable ?? targetTable;
+            var valueSource = targetDataType switch
             {
-                case TargetDataType.Float:
-                    targetTable.WriteDataOnTableDouble(targetKey, floatVal);
+                TargetDataType.Float => floatVal,
+                TargetDataType.Int => intVal,
+                TargetDataType.Bool => boolVal ? 1.0 : -1.0,
+                TargetDataType.Key => valueSourceTable.GetTableValueDouble(sourceKey),
+                _ => throw new ArgumentOutOfRangeException()
+            };
+            var valueToWrite = targetTable.GetTableValueDouble(targetKey);
+            switch (writeOperator)
+            {
+                case WriteOperator.Add:
+                    valueToWrite += valueSource;
                     break;
-                case TargetDataType.Int:
-                    targetTable.WriteDataOnTableInt(targetKey, intVal);
+                case WriteOperator.Mul:
+                    valueToWrite *= valueSource;
                     break;
-                case TargetDataType.Bool:
-                    targetTable.WriteDataOnTableBool(targetKey, boolVal);
+                case WriteOperator.Div:
+                    valueToWrite /= valueSource;
                     break;
-                case TargetDataType.Key:
-                    targetTable.WriteDataOnTableDouble(targetKey, targetTable.GetTableValueDouble(sourceKey));
+                case WriteOperator.Update:
+                    valueToWrite = valueSource;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-        }
-
-        public void WriteData(KeyValueTable targetTable, KeyValueTable sourceTable)
-        {
+            
             switch (targetDataType)
             {
                 case TargetDataType.Float:
-                    targetTable.WriteDataOnTableDouble(targetKey, floatVal);
+                case TargetDataType.Key:
+                    targetTable.WriteDataOnTableDouble(targetKey, valueToWrite);
                     break;
                 case TargetDataType.Int:
-                    targetTable.WriteDataOnTableInt(targetKey, intVal);
+                    targetTable.WriteDataOnTableInt(targetKey, (int)valueToWrite);
                     break;
                 case TargetDataType.Bool:
-                    targetTable.WriteDataOnTableBool(targetKey, boolVal);
-                    break;
-                case TargetDataType.Key:
-                    targetTable.WriteDataOnTableDouble(targetKey, sourceTable.GetTableValueDouble(sourceKey));
+                    targetTable.WriteDataOnTableBool(targetKey, valueToWrite > 0);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -64,6 +71,14 @@ namespace GeneralGameDevKit.ValueTableSystem
             Int,
             Bool,
             Key
+        }
+
+        public enum WriteOperator
+        {
+            Update,
+            Add,
+            Mul,
+            Div
         }
     }
 }
