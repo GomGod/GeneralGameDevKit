@@ -21,16 +21,32 @@ namespace GeneralGameDevKit.StatSystem
         public List<StatModifier> ModifiersToApply = new();
 
         public StatEffectProfile.DurationPolicy DurationPolicy;
-        public float Duration;
-        
+        public float Duration
+        {
+            get => _headDuration;
+            set
+            {
+                _headDuration = value;
+                if (CurrentStackDuration.Count == 0)
+                {
+                    CurrentStackDuration.Add(value);
+                }
+                else
+                {
+                    CurrentStackDuration[0] = _headDuration;
+                }
+            }
+        }
+
         public int MaxStack;
         public bool UseStacking;
         public StatEffectProfile.StackOutPolicy StackOutPolicy;
         public StatEffectProfile.StackDurationPolicy StackDurationPolicy;
         
         public readonly List<float> CurrentStackDuration = new();
-        private int _currentStackCnt;
-
+        private float _headDuration;
+        private int _currentStackCnt = 1;
+        
         public float GetRepresentDuration()
         {
             return DurationPolicy switch
@@ -88,6 +104,8 @@ namespace GeneralGameDevKit.StatSystem
             var removedCnt = CurrentStackDuration.RemoveAll(dur => dur <= 0);
             var isRemovedStack = removedCnt > 0;
 
+            _headDuration = CurrentStackDuration.Count > 0 ? CurrentStackDuration[0] : 0.0f;
+            
             if (isRemovedStack)
             {
                 switch (StackDurationPolicy)

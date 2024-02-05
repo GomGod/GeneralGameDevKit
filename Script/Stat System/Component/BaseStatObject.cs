@@ -22,6 +22,8 @@ namespace GeneralGameDevKit.StatSystem
         protected DevKitTagContainer _manualAddedTags = new();
         
         protected List<StatEffectInstance> currentEffectInstances = new();
+        protected List<StatEffectInstance> tempCollectionToStatEffectProcessing = new();
+        
         protected List<StatModifier> temporaryModifiers = new();
         
         public readonly StatSystemCore StatSystemCore = new();
@@ -90,18 +92,16 @@ namespace GeneralGameDevKit.StatSystem
 
             var isStackable = instanceToAdd.UseStacking;
             if (isStackable)
-            {//find stackable effect and try add stack
+            {
+                //find stackable effect and try add stack
                 var targetIdx = currentEffectInstances.FindIndex(i => i.EffectId.Equals(instanceToAdd.EffectId));
-                if (targetIdx <= 0) return true;
-                
-                var result = currentEffectInstances[targetIdx].TryAddStack(instanceToAdd);
-                if (!result)
-                    return false;
-                
+                if (targetIdx > 0)
+                    return currentEffectInstances[targetIdx].TryAddStack(instanceToAdd);
+
                 ApplyStatEffectInstance(instanceToAdd, true);
                 return true;
             }
-            
+
             //or add new effect instance
             ApplyStatEffectInstance(instanceToAdd, false);
 
