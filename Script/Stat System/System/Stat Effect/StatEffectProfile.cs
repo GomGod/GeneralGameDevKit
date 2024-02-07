@@ -43,7 +43,7 @@ namespace GeneralGameDevKit.StatSystem
                 EffectDesc = effectDesc,
                 ModifiersToApply = statModifiers.Select(mod => mod.GetCopy()).ToList(),
                 EffectTagsToApply = new List<DevKitTag>(effectTags),
-                Duration = duration,
+                DefinedDuration = duration,
                 DurationPolicy = durationPolicy,
                 UseStacking = useStacking,
                 MaxStack = maxStack,

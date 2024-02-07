@@ -65,7 +65,7 @@ namespace GeneralGameDevKit.StatSystem
                 fxInstance.EffectTagsToApply.AddRange(effectTags);
 
                 fxInstance.DurationPolicy = durationPolicy;
-                fxInstance.Duration = (float) GetValueOverrideSourceTypeSwitch(constDuration, dynamicDuration, sourceKeyValueTable, durationOverrideSourceType);
+                fxInstance.DefinedDuration = (float) GetValueOverrideSourceTypeSwitch(constDuration, dynamicDuration, sourceKeyValueTable, durationOverrideSourceType);
 
                 fxInstance.UseStacking = useStacking;
                 fxInstance.MaxStack = (int) GetValueOverrideSourceTypeSwitch(constMaxStack, dynamicMaxStack, sourceKeyValueTable, stackOverrideSourceType);

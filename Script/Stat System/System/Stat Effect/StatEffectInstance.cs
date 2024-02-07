@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Developer.GeneralGameDevKit.TagSystem;
+using UnityEngine;
 
 namespace GeneralGameDevKit.StatSystem
 {
@@ -21,7 +22,7 @@ namespace GeneralGameDevKit.StatSystem
         public List<StatModifier> ModifiersToApply = new();
 
         public StatEffectProfile.DurationPolicy DurationPolicy;
-        public float Duration
+        public float DefinedDuration
         {
             get => _headDuration;
             set
@@ -59,17 +60,50 @@ namespace GeneralGameDevKit.StatSystem
         
         public int GetCurrentStackCount() => _currentStackCnt;
 
-        public bool TryAddStack(StatEffectInstance fxInstance)
+        public StatEffectUpdateResult TryAddStack(StatEffectInstance fxInstance)
         {
             if (!UseStacking)
-                return false;
-            if (_currentStackCnt >= MaxStack)
-                return false;
+                return StatEffectUpdateResult.Fail;
+
             if (!fxInstance.EffectId.Equals(EffectId))
-                return false;
+                return StatEffectUpdateResult.Fail;
+
+            if (_currentStackCnt >= MaxStack)
+            {//refresh duration
+                switch (fxInstance.StackDurationPolicy)
+                {
+                    case StatEffectProfile.StackDurationPolicy.Independent:
+                        var minDur = CurrentStackDuration.Max();
+                        var minIdx = -1;
+
+                        for (var i = 0; i < CurrentStackDuration.Count; i++)
+                        {
+                            var isThisValMin = minDur > CurrentStackDuration[i];
+                            if (!isThisValMin) continue;
+
+                            minDur = CurrentStackDuration[i];
+                            minIdx = i;
+                        }
+
+                        if (minIdx >= 0)
+                        {
+                            CurrentStackDuration[minIdx] = fxInstance.DefinedDuration;
+                        }
+
+                        break;
+                    case StatEffectProfile.StackDurationPolicy.Combined:
+                        CurrentStackDuration[0] = fxInstance.DefinedDuration;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+
+                return StatEffectUpdateResult.Refresh;
+            }
 
             _currentStackCnt += 1;
-            return true;
+            CurrentStackDuration.Add(fxInstance.DefinedDuration);
+            return StatEffectUpdateResult.Stack;
         }
 
         private void NoticeExpired()
@@ -133,6 +167,16 @@ namespace GeneralGameDevKit.StatSystem
             
             NoticeExpired();
             return _currentStackCnt == 0;
+        }
+        
+        public enum StatEffectUpdateResult
+        {
+            Add,
+            Remove,
+            Stack,
+            RemoveStack,
+            Refresh,
+            Fail
         }
     }
 }

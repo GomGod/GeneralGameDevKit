@@ -13,21 +13,23 @@ namespace GeneralGameDevKit.StatSystem
         [SerializeField] protected DevKitTagContainer permanentTags;
         [SerializeField] protected List<StatConstraintsSO> statConstraints; 
 
-        protected Dictionary<string, Action<StatInfo, float>> applyStatChangedCallbacks = new();
-        protected Dictionary<string, Action<StatInfo, float>> baseStatChangedCallbacks = new();
+        protected readonly Dictionary<string, Action<StatInfo, float>> ApplyStatChangedCallbacks = new();
+        protected Dictionary<string, Action<StatInfo, float>> BaseStatChangedCallbacks = new();
         
         protected const string PersonalTablePrefix = "%StatSystem%ptable%";
         
-        protected DevKitTagContainer _temporaryTags = new();
-        protected DevKitTagContainer _manualAddedTags = new();
+        protected readonly DevKitTagContainer TemporaryTags = new();
+        protected readonly DevKitTagContainer ManualAddedTags = new();
         
-        protected List<StatEffectInstance> currentEffectInstances = new();
-        protected List<StatEffectInstance> tempCollectionToStatEffectProcessing = new();
+        protected readonly List<StatEffectInstance> CurrentEffectInstances = new();
+        protected readonly List<StatEffectInstance> TempCollectionToStatEffectProcessing = new();
         
-        protected List<StatModifier> temporaryModifiers = new();
+        protected List<StatModifier> TemporaryModifiers = new();
         
         public readonly StatSystemCore StatSystemCore = new();
 
+        public event Action<StatEffectInstance, StatEffectInstance.StatEffectUpdateResult> OnStatEffectUpdate;
+        
         protected void Awake()
         {
             KeyValueTableManager.Instance.AddNewTable(GetPersonalTableKey());
@@ -82,29 +84,35 @@ namespace GeneralGameDevKit.StatSystem
             return StatSystemCore.GetStatApplyValue(identifier);
         }
 
-        public List<StatEffectInstance> GetAllStatEffectInstances() => new(currentEffectInstances);
+        public List<StatEffectInstance> GetAllStatEffectInstances() => new(CurrentEffectInstances);
         public List<StatModifier> FindModifiersWithTargetStat(string identifier) => new(StatSystemCore.GetAllStatModifiers().Where(m => m.TargetStatID.Equals(identifier)));
         
         public bool ApplyStatEffect(StatEffectInstance instanceToAdd)
         {
-            temporaryModifiers.Clear();
-            StatSystemCore.GetAllStatModifiers(ref temporaryModifiers);
+            TemporaryModifiers.Clear();
+            StatSystemCore.GetAllStatModifiers(ref TemporaryModifiers);
 
             var isStackable = instanceToAdd.UseStacking;
             if (isStackable)
             {
                 //find stackable effect and try add stack
-                var targetIdx = currentEffectInstances.FindIndex(i => i.EffectId.Equals(instanceToAdd.EffectId));
-                if (targetIdx > 0)
-                    return currentEffectInstances[targetIdx].TryAddStack(instanceToAdd);
+                var targetIdx = CurrentEffectInstances.FindIndex(i => i.EffectId.Equals(instanceToAdd.EffectId));
+                if (targetIdx >= 0)
+                {
+                    var result = CurrentEffectInstances[targetIdx].TryAddStack(instanceToAdd);
+                    OnStatEffectUpdate?.Invoke(instanceToAdd, result);
+                    return result is StatEffectInstance.StatEffectUpdateResult.Stack or StatEffectInstance.StatEffectUpdateResult.Refresh;
+                }
+
 
                 ApplyStatEffectInstance(instanceToAdd, true);
+                OnStatEffectUpdate?.Invoke(instanceToAdd, StatEffectInstance.StatEffectUpdateResult.Add);
                 return true;
             }
 
             //or add new effect instance
             ApplyStatEffectInstance(instanceToAdd, false);
-
+            OnStatEffectUpdate?.Invoke(instanceToAdd, StatEffectInstance.StatEffectUpdateResult.Add);
             return true;
         }
 
@@ -112,7 +120,7 @@ namespace GeneralGameDevKit.StatSystem
         {
             for (var i = 0; i > cnt; i++)
             {
-                _manualAddedTags.AddTag(tag);
+                ManualAddedTags.AddTag(tag);
             }
         }
 
@@ -120,21 +128,21 @@ namespace GeneralGameDevKit.StatSystem
         {
             for (var i = 0; i > cnt; i++)
             {
-                _manualAddedTags.RemoveTag(tag);
+                ManualAddedTags.RemoveTag(tag);
             }
         }
 
         public int GetTagCount(DevKitTag tag)
         {
-            return permanentTags.GetTagCount(tag) + _temporaryTags.GetTagCount(tag) + _manualAddedTags.GetTagCount(tag);
+            return permanentTags.GetTagCount(tag) + TemporaryTags.GetTagCount(tag) + ManualAddedTags.GetTagCount(tag);
         }
 
         public void GetApplyTags(ref DevKitTagContainer tagCollectionToReceive)
         {
             tagCollectionToReceive.ClearContainer();
             tagCollectionToReceive.MergeContainer(permanentTags);
-            tagCollectionToReceive.MergeContainer(_manualAddedTags);
-            foreach (var fxInstance in currentEffectInstances)
+            tagCollectionToReceive.MergeContainer(ManualAddedTags);
+            foreach (var fxInstance in CurrentEffectInstances)
             {
                 tagCollectionToReceive.AddTags(fxInstance.EffectTagsToApply);
             }
@@ -144,8 +152,8 @@ namespace GeneralGameDevKit.StatSystem
         {
             var ret = new DevKitTagContainer();
             ret.MergeContainer(permanentTags);
-            ret.MergeContainer(_manualAddedTags);
-            foreach (var fxInstance in currentEffectInstances)
+            ret.MergeContainer(ManualAddedTags);
+            foreach (var fxInstance in CurrentEffectInstances)
             {
                 ret.AddTags(fxInstance.EffectTagsToApply);
             }
@@ -161,9 +169,9 @@ namespace GeneralGameDevKit.StatSystem
                 StatSystemCore.AddStatModifier(modifier);
             }
 
-            _temporaryTags.AddTags(instanceToAdd.EffectTagsToApply);
+            TemporaryTags.AddTags(instanceToAdd.EffectTagsToApply);
             if (!isStackOperation) return;
-            currentEffectInstances.Add(instanceToAdd);
+            CurrentEffectInstances.Add(instanceToAdd);
         }
 
         public void RemoveStatEffect(StatEffectInstance instanceToRemove)
@@ -172,58 +180,61 @@ namespace GeneralGameDevKit.StatSystem
             {
                 StatSystemCore.RemoveStatModifier(modifier);
             }
-            
-            _temporaryTags.RemoveTags(instanceToRemove.EffectTagsToApply);
-            if (!instanceToRemove.UseStacking || instanceToRemove.GetCurrentStackCount() == 0)
+
+            TemporaryTags.RemoveTags(instanceToRemove.EffectTagsToApply);
+            if (instanceToRemove.UseStacking && instanceToRemove.GetCurrentStackCount() != 0)
             {
-                currentEffectInstances.Remove(instanceToRemove);
+                OnStatEffectUpdate?.Invoke(instanceToRemove, StatEffectInstance.StatEffectUpdateResult.RemoveStack);
+                return;
             }
+            CurrentEffectInstances.Remove(instanceToRemove);
+            OnStatEffectUpdate?.Invoke(instanceToRemove, StatEffectInstance.StatEffectUpdateResult.Remove);
         }
 
         private void BroadcastApplyStatChangedEvent(StatInfo statInfo, float val)
         {
-            if (!applyStatChangedCallbacks.ContainsKey(statInfo.ID))
+            if (!ApplyStatChangedCallbacks.ContainsKey(statInfo.ID))
                 return;
             
-            applyStatChangedCallbacks[statInfo.ID]?.Invoke(statInfo, val);
+            ApplyStatChangedCallbacks[statInfo.ID]?.Invoke(statInfo, val);
         }
         
         private void BroadcastBaseStatChangedEvent(StatInfo statInfo, float val)
         {
-            if (!applyStatChangedCallbacks.ContainsKey(statInfo.ID))
+            if (!ApplyStatChangedCallbacks.ContainsKey(statInfo.ID))
                 return;
             
-            applyStatChangedCallbacks[statInfo.ID]?.Invoke(statInfo, val);
+            ApplyStatChangedCallbacks[statInfo.ID]?.Invoke(statInfo, val);
         }
 
         public void SetOnTagUpdatedEventCallback(Action<DevKitTag, int, int> callback)
         {
             permanentTags.OnTagUpdate += callback;
-            _temporaryTags.OnTagUpdate += callback;
+            TemporaryTags.OnTagUpdate += callback;
         }
 
         public void RemoveOnTagUpdatedEventCallback(Action<DevKitTag, int, int> callback)
         {
             permanentTags.OnTagUpdate -= callback;
-            _temporaryTags.OnTagUpdate -= callback;
+            TemporaryTags.OnTagUpdate -= callback;
         }
 
         public void SetOnApplyStatUpdatedEventCallback(string targetId, Action<StatInfo, float> callback)
         {
-            if (!applyStatChangedCallbacks.ContainsKey(targetId))
+            if (!ApplyStatChangedCallbacks.ContainsKey(targetId))
             {
-                applyStatChangedCallbacks.Add(targetId, callback);
+                ApplyStatChangedCallbacks.Add(targetId, callback);
                 return;
             }
-            applyStatChangedCallbacks[targetId] += callback;
+            ApplyStatChangedCallbacks[targetId] += callback;
         }
         
         public bool RemoveOnApplyStatUpdatedEventCallback(string targetId, Action<StatInfo, float> callback)
         {
-            if (!applyStatChangedCallbacks.ContainsKey(targetId))
+            if (!ApplyStatChangedCallbacks.ContainsKey(targetId))
                 return false;
 
-            applyStatChangedCallbacks[targetId] -= callback;
+            ApplyStatChangedCallbacks[targetId] -= callback;
             return true;
         }
 
