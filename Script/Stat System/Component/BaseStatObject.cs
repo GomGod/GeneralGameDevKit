@@ -100,7 +100,7 @@ namespace GeneralGameDevKit.StatSystem
                 if (targetIdx >= 0)
                 {
                     var result = CurrentEffectInstances[targetIdx].TryAddStack(instanceToAdd);
-                    OnStatEffectUpdate?.Invoke(instanceToAdd, result);
+                    OnStatEffectUpdate?.Invoke(CurrentEffectInstances[targetIdx], result);
                     return result is StatEffectInstance.StatEffectUpdateResult.Stack or StatEffectInstance.StatEffectUpdateResult.Refresh;
                 }
 
