@@ -50,6 +50,11 @@ namespace GeneralGameDevKit.StatSystem
         public void AddStatConstraints(StatConstraints constraintToAdd)
         {
             var targetStatID = constraintToAdd.targetStatID;
+            if (!_statMap.ContainsKey(targetStatID))
+            {
+                AddNewStat(targetStatID, 0.0f);
+            }
+            
             if (!_statConstraints.ContainsKey(targetStatID))
             {
                 _statConstraints.Add(targetStatID, new HashSet<StatConstraints>());
@@ -69,6 +74,16 @@ namespace GeneralGameDevKit.StatSystem
 
         public void AddConstraintDependency(string targetReactId, StatConstraints constraintsToAdd)
         {
+            if (!_statMap.ContainsKey(targetReactId))
+            {
+                AddNewStat(targetReactId, 0.0f);
+            }
+
+            if (!_statMap.ContainsKey(constraintsToAdd.targetStatID))
+            {
+                AddNewStat(constraintsToAdd.targetStatID, 0.0f);
+            }
+            
             if (targetReactId.Equals(constraintsToAdd.targetStatID))
             {
                 Debug.LogWarning("Recursive dependency is not allowed. Add failed");
@@ -103,6 +118,11 @@ namespace GeneralGameDevKit.StatSystem
         /// <param name="mod"></param>
         public void AddStatModifier(StatModifier mod)
         {
+            if (!_statMap.ContainsKey(mod.TargetStatID))
+            {
+                AddNewStat(mod.TargetStatID, 0.0f);
+            }
+            
             switch (mod.ModPolicy)
             {
                 case StatModifier.ModificationPolicy.Instant:
@@ -154,13 +174,8 @@ namespace GeneralGameDevKit.StatSystem
         {
             if (!_statMap.TryGetValue(targetID, out var targetStat))
             {
-                targetStat = new StatInfo
-                {
-                    ID = targetID,
-                    StatValue = 0
-                };
-                _statMap.Add(targetID, targetStat);
-                Debug.Log($"New stat value added. [{targetID} : {value.ToString(CultureInfo.InvariantCulture)}]");
+                AddNewStat(targetID, 0.0f);
+                targetStat = _statMap[targetID];
             }
 
             var prevValue = targetStat.StatValue;
@@ -176,6 +191,17 @@ namespace GeneralGameDevKit.StatSystem
             
             OnStatBaseValueChanged?.Invoke(targetStat, prevValue);
             OnStatApplyValueChanged?.Invoke(targetStat, GetStatApplyValue(targetStat.ID));
+        }
+
+        public void AddNewStat(string targetID, float initialValue)
+        {
+            var newStat = new StatInfo
+            {
+                ID = targetID,
+                StatValue = initialValue
+            };
+            _statMap.Add(targetID, newStat);
+            Debug.Log($"New stat value added. [{targetID} : {initialValue.ToString(CultureInfo.InvariantCulture)}]");
         }
 
         private readonly Dictionary<string, float> _pendedBaseValueChanges = new();
