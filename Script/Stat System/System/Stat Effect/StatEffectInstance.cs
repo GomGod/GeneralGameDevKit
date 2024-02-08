@@ -120,6 +120,9 @@ namespace GeneralGameDevKit.StatSystem
         /// </returns>
         public bool TickDuration(float t)
         {
+            if (DurationPolicy is StatEffectProfile.DurationPolicy.Infinite)
+                return false;
+            
             switch (StackDurationPolicy)
             {
                 case StatEffectProfile.StackDurationPolicy.Independent:

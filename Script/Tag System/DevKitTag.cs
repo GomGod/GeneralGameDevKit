@@ -12,8 +12,8 @@ namespace Developer.GeneralGameDevKit.TagSystem
         
         [SerializeField, KeyTable("KeyTableAsset_Tags")] private string tagKey;
         private static Dictionary<string, DevKitTag> _globalTagCollection = new();
+        private static Dictionary<string, string[]> _cachedPathStructure = new();
         private string _fullPathOfTag;
-        private string[] _tagStructure;
         private bool _initialized;
 
         public string TagKey => tagKey;
@@ -24,6 +24,17 @@ namespace Developer.GeneralGameDevKit.TagSystem
             {
                 LoadTag(tag);
             }
+        }
+
+        public static string[] GetCachedStructure(string tagKey)
+        {
+            if (_cachedPathStructure.TryGetValue(tagKey, out var ret))
+            {
+                ret = tagKey.Split('/');
+                _cachedPathStructure.Add(tagKey, ret);
+            }
+
+            return ret;
         }
         
         public static void LoadTag(DevKitTag tag)
@@ -42,7 +53,6 @@ namespace Developer.GeneralGameDevKit.TagSystem
         {
             tagKey = path;
             _fullPathOfTag = path;
-            _tagStructure = _fullPathOfTag.Split('/');
             _initialized = true;
         }
 
@@ -56,7 +66,6 @@ namespace Developer.GeneralGameDevKit.TagSystem
             }
             
             _fullPathOfTag = tagKey;
-            _tagStructure = _fullPathOfTag.Split('/');
             _initialized = true;
         }
 
@@ -87,7 +96,7 @@ namespace Developer.GeneralGameDevKit.TagSystem
         public string[] GetTagStructure()
         {
             CheckInitialization();
-            return _tagStructure;
+            return GetCachedStructure(tagKey);
         }
 
 
@@ -99,17 +108,26 @@ namespace Developer.GeneralGameDevKit.TagSystem
         public bool IsSubTagOf(DevKitTag otherTag)
         {
             CheckInitialization();
-            var otherTagStructure = otherTag.GetTagStructure();
-            if (_tagStructure.Length > otherTagStructure.Length)
+            var otherTagPath = otherTag.GetFullPathOfTag();
+            return IsSubTagOfPath(otherTagPath);
+        }
+
+        public bool IsSubTagOfPath(string path)
+        {
+            CheckInitialization();
+            var otherPathStructure = GetCachedStructure(path);
+            var tagStructure = GetCachedStructure(tagKey);
+            if (tagStructure.Length > otherPathStructure.Length)
             {
                 return false;
             }
-                
-            for (var i = 0; i < _tagStructure.Length && i < otherTagStructure.Length; i++)
+
+            for (var i = 0; i < tagStructure.Length && i < otherPathStructure.Length; i++)
             {
-                if (!_tagStructure[i].Equals(otherTagStructure[i]))
+                if (!tagStructure[i].Equals(otherPathStructure[i]))
                     return false;
             }
+
             return true;
         }
 

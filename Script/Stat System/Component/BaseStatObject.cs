@@ -100,18 +100,22 @@ namespace GeneralGameDevKit.StatSystem
                 if (targetIdx >= 0)
                 {
                     var result = CurrentEffectInstances[targetIdx].TryAddStack(instanceToAdd);
+                    if (result is StatEffectInstance.StatEffectUpdateResult.Stack)
+                    {
+                        ProcessStackedStatEffectInstance(instanceToAdd);
+                    }
                     OnStatEffectUpdate?.Invoke(CurrentEffectInstances[targetIdx], result);
                     return result is StatEffectInstance.StatEffectUpdateResult.Stack or StatEffectInstance.StatEffectUpdateResult.Refresh;
                 }
 
-
-                ApplyStatEffectInstance(instanceToAdd, true);
+                //first stack of effect
+                AddStatEffectInstance(instanceToAdd);
                 OnStatEffectUpdate?.Invoke(instanceToAdd, StatEffectInstance.StatEffectUpdateResult.Add);
                 return true;
             }
 
             //or add new effect instance
-            ApplyStatEffectInstance(instanceToAdd, false);
+            AddStatEffectInstance(instanceToAdd);
             OnStatEffectUpdate?.Invoke(instanceToAdd, StatEffectInstance.StatEffectUpdateResult.Add);
             return true;
         }
@@ -153,25 +157,28 @@ namespace GeneralGameDevKit.StatSystem
             var ret = new DevKitTagContainer();
             ret.MergeContainer(permanentTags);
             ret.MergeContainer(ManualAddedTags);
-            foreach (var fxInstance in CurrentEffectInstances)
-            {
-                ret.AddTags(fxInstance.EffectTagsToApply);
-            }
-
+            ret.MergeContainer(TemporaryTags);
             return ret;
         }
 
-        protected void ApplyStatEffectInstance(StatEffectInstance instanceToAdd, bool isStackOperation)
+        protected void AddStatEffectInstance(StatEffectInstance instanceToAdd)
         {
             instanceToAdd.OnExpired += RemoveStatEffect;
             foreach (var modifier in instanceToAdd.ModifiersToApply)
             {
                 StatSystemCore.AddStatModifier(modifier);
             }
-
             TemporaryTags.AddTags(instanceToAdd.EffectTagsToApply);
-            if (!isStackOperation) return;
             CurrentEffectInstances.Add(instanceToAdd);
+        }
+
+        protected void ProcessStackedStatEffectInstance(StatEffectInstance instanceToStack)
+        {
+            foreach (var modifier in instanceToStack.ModifiersToApply)
+            {
+                StatSystemCore.AddStatModifier(modifier);
+            }
+            TemporaryTags.AddTags(instanceToStack.EffectTagsToApply);
         }
 
         public void RemoveStatEffect(StatEffectInstance instanceToRemove)

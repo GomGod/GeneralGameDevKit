@@ -27,7 +27,7 @@ namespace GeneralGameDevKit.StatSystem
         [Header("Profiles")]
         [SerializeField] private List<StatEffectProfile> effectProfilesToApply;
         [SerializeField] private List<ModifierOverrideData> effectModifierOverrideData;
-        
+
         [Header("Override Settings")]
         [SerializeField] public List<DevKitTag> effectTags;
 
@@ -60,8 +60,7 @@ namespace GeneralGameDevKit.StatSystem
 
                 fxInstance.GroupId = groupId;
                 fxInstance.EffectId = $"{groupId}%{i.ToString()}%{fxInstance.EffectId}";
-
-                fxInstance.EffectTagsToApply.Clear();
+                
                 fxInstance.EffectTagsToApply.AddRange(effectTags);
 
                 fxInstance.DurationPolicy = durationPolicy;
