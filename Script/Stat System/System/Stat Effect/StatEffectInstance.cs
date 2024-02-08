@@ -122,53 +122,57 @@ namespace GeneralGameDevKit.StatSystem
         {
             switch (StackDurationPolicy)
             {
-            case StatEffectProfile.StackDurationPolicy.Independent:
-                for (var i = 0; i < MaxStack; i++)
-                {
-                    CurrentStackDuration[i] -= t;
-                }
-                break;
-            case StatEffectProfile.StackDurationPolicy.Combined:
-                CurrentStackDuration[0] -= t;
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
+                case StatEffectProfile.StackDurationPolicy.Independent:
+                    for (var i = 0; i < MaxStack; i++)
+                    {
+                        CurrentStackDuration[i] -= t;
+                    }
+
+                    break;
+                case StatEffectProfile.StackDurationPolicy.Combined:
+                    CurrentStackDuration[0] -= t;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
 
             var removedCnt = CurrentStackDuration.RemoveAll(dur => dur <= 0);
             var isRemovedStack = removedCnt > 0;
 
             _headDuration = CurrentStackDuration.Count > 0 ? CurrentStackDuration[0] : 0.0f;
-            
+
             if (isRemovedStack)
             {
                 switch (StackDurationPolicy)
                 {
-                case StatEffectProfile.StackDurationPolicy.Independent:
-                    _currentStackCnt -= removedCnt;
-                    break;
-                case StatEffectProfile.StackDurationPolicy.Combined:
-                    switch (StackOutPolicy)
-                    {
-                    case StatEffectProfile.StackOutPolicy.RemoveSingleStack:
-                        _currentStackCnt -= 1;
+                    case StatEffectProfile.StackDurationPolicy.Independent:
+                        _currentStackCnt -= removedCnt;
                         break;
-                    case StatEffectProfile.StackOutPolicy.ClearAllStack:
-                        _currentStackCnt = 0;
+                    case StatEffectProfile.StackDurationPolicy.Combined:
+                        switch (StackOutPolicy)
+                        {
+                            case StatEffectProfile.StackOutPolicy.RemoveSingleStack:
+                                _currentStackCnt -= 1;
+                                break;
+                            case StatEffectProfile.StackOutPolicy.ClearAllStack:
+                                _currentStackCnt = 0;
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException();
+                        }
+
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
-                    }
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
                 }
             }
-            
-            NoticeExpired();
-            return _currentStackCnt == 0;
+
+            var isExpired = _currentStackCnt == 0;
+            if (isExpired)
+                NoticeExpired();
+            return isExpired;
         }
-        
+
         public enum StatEffectUpdateResult
         {
             Add,
