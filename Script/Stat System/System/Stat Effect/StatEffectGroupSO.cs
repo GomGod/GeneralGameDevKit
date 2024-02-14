@@ -83,6 +83,7 @@ namespace GeneralGameDevKit.StatSystem
             {
                 OverrideSourceType.Const => constValue,
                 OverrideSourceType.Dynamic => sourceTable.GetTableValueDouble(dynamicKey),
+                OverrideSourceType.DynamicGlobal => KeyValueTableManager.Instance.GetGlobalKeyValueTable().GetTableValueDouble(dynamicKey),
                 _ => throw new ArgumentOutOfRangeException(nameof(overrideSourceType), overrideSourceType, null)
             };
         }
@@ -102,6 +103,7 @@ namespace GeneralGameDevKit.StatSystem
     public enum OverrideSourceType
     {
         Const,
-        Dynamic
+        Dynamic,
+        DynamicGlobal
     }
 }
