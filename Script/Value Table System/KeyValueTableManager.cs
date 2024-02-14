@@ -8,6 +8,7 @@ namespace GeneralGameDevKit.ValueTableSystem
     /// </summary>
     public class KeyValueTableManager : NonMonoSingleton<KeyValueTableManager>
     {
+        private const string _globalValTableId = "%TableID%Global";
         private readonly Dictionary<string, KeyValueTable> _keyValueTables = new();
 
         /// <summary>
@@ -39,6 +40,8 @@ namespace GeneralGameDevKit.ValueTableSystem
         {
             return _keyValueTables.Remove(tableName);
         }
+
+        public KeyValueTable GetGlobalKeyValueTable() => GetKeyValueTable(_globalValTableId);
 
         /// <summary>
         /// Get KeyValueTable matches with tableName.
