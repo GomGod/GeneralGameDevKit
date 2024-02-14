@@ -45,7 +45,7 @@ namespace GeneralGameDevKit.StatSystem
             collectionToReceive.AddRange(_modifiersForCalc);
         }
 
-        public List<StatModifier> GetAllStatModifiers() => new(_modifiersForCalc);
+        public List<StatModifier> GetAllStatModifiers() => new(_currentModifiers);
 
         public void AddStatConstraints(StatConstraints constraintToAdd)
         {
