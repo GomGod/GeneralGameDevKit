@@ -28,7 +28,7 @@ namespace Developer.GeneralGameDevKit.TagSystem
 
         public static string[] GetCachedStructure(string tagKey)
         {
-            if (_cachedPathStructure.TryGetValue(tagKey, out var ret))
+            if (!_cachedPathStructure.TryGetValue(tagKey, out var ret))
             {
                 ret = tagKey.Split('/');
                 _cachedPathStructure.Add(tagKey, ret);
@@ -115,6 +115,9 @@ namespace Developer.GeneralGameDevKit.TagSystem
         public bool IsSubTagOfPath(string path)
         {
             CheckInitialization();
+            if (string.IsNullOrEmpty(path))
+                return false;
+            
             var otherPathStructure = GetCachedStructure(path);
             var tagStructure = GetCachedStructure(tagKey);
             if (tagStructure.Length > otherPathStructure.Length)
