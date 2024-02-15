@@ -9,6 +9,7 @@ namespace GeneralGameDevKit.StatSystem
     public class StatEffectInstance
     {
         public event Action<StatEffectInstance> OnExpired;
+        public event Action<StatEffectInstance, int> OnRemovedStack;
         public BaseStatObject CasterObject;
         
         public string GroupId;
@@ -55,7 +56,7 @@ namespace GeneralGameDevKit.StatSystem
         {
             return DurationPolicy switch
             {
-                StatEffectProfile.DurationPolicy.Manual => CurrentDurationsEachStack.Count <= 0 ? 0 : CurrentDurationsEachStack.Max(),
+                StatEffectProfile.DurationPolicy.Manual => CurrentDurationsEachStack.Max(),
                 StatEffectProfile.DurationPolicy.Infinite => float.MaxValue,
                 _ => throw new ArgumentOutOfRangeException()
             };
@@ -66,50 +67,45 @@ namespace GeneralGameDevKit.StatSystem
         public StatEffectUpdateResult TryAddStack(StatEffectInstance fxInstance)
         {
             if (!UseStacking)
-                return StatEffectUpdateResult.Fail;
+                return StatEffectUpdateResult.AddFail;
 
             if (!fxInstance.EffectId.Equals(EffectId))
-                return StatEffectUpdateResult.Fail;
+                return StatEffectUpdateResult.AddFail;
 
-            if (_currentStackCnt >= MaxStack)
-            {//refresh duration
-                switch (fxInstance.StackDurationPolicy)
-                {
-                    case StatEffectProfile.StackDurationPolicy.Independent:
-                        var minDur = CurrentDurationsEachStack.Max();
-                        var minIdx = -1;
+            var isStackCntFull = _currentStackCnt >= MaxStack;
 
-                        for (var i = 0; i < CurrentDurationsEachStack.Count; i++)
-                        {
-                            var isThisValMin = minDur > CurrentDurationsEachStack[i];
-                            if (!isThisValMin) continue;
+            switch (fxInstance.StackDurationPolicy)
+            {
+                case StatEffectProfile.StackDurationPolicy.Independent when !isStackCntFull:
+                    _currentStackCnt += 1;
+                    CurrentDurationsEachStack.Add(fxInstance.DefinedDuration);
+                    return StatEffectUpdateResult.Stack;
+                case StatEffectProfile.StackDurationPolicy.Independent:
+                    var minDur = CurrentDurationsEachStack.Max();
+                    var minIdx = -1;
 
-                            minDur = CurrentDurationsEachStack[i];
-                            minIdx = i;
-                        }
+                    for (var i = 0; i < CurrentDurationsEachStack.Count; i++)
+                    {
+                        var isThisValMin = minDur > CurrentDurationsEachStack[i];
+                        if (!isThisValMin) continue;
 
-                        if (minIdx >= 0)
-                        {
-                            CurrentDurationsEachStack[minIdx] = fxInstance.DefinedDuration;
-                        }
-                        break;
-                    case StatEffectProfile.StackDurationPolicy.Combined:
-                        CurrentDurationsEachStack[0] = fxInstance.DefinedDuration;
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-                return StatEffectUpdateResult.Refresh;
+                        minDur = CurrentDurationsEachStack[i];
+                        minIdx = i;
+                    }
+
+                    if (minIdx >= 0)
+                    {
+                        CurrentDurationsEachStack[minIdx] = fxInstance.DefinedDuration;
+                    }
+                    return StatEffectUpdateResult.ResetDuration;
+                case StatEffectProfile.StackDurationPolicy.Combined:
+                    if (!isStackCntFull)
+                        _currentStackCnt += 1;
+                    CurrentDurationsEachStack[0] = fxInstance.DefinedDuration;
+                    return isStackCntFull ? StatEffectUpdateResult.ResetDuration : StatEffectUpdateResult.Stack;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
-
-            _currentStackCnt += 1;
-            CurrentDurationsEachStack.Add(fxInstance.DefinedDuration);
-            return StatEffectUpdateResult.Stack;
-        }
-
-        private void NoticeExpired()
-        {
-            OnExpired?.Invoke(this);
         }
 
         /// <summary>
@@ -123,7 +119,7 @@ namespace GeneralGameDevKit.StatSystem
         {
             if (DurationPolicy is StatEffectProfile.DurationPolicy.Infinite)
                 return false;
-            
+
             switch (StackDurationPolicy)
             {
                 case StatEffectProfile.StackDurationPolicy.Independent:
@@ -131,32 +127,22 @@ namespace GeneralGameDevKit.StatSystem
                     {
                         CurrentDurationsEachStack[i] -= t;
                     }
-
+                    var removedCnt = CurrentDurationsEachStack.RemoveAll(dur => dur <= 0);
+                    _currentStackCnt -= removedCnt;
                     break;
                 case StatEffectProfile.StackDurationPolicy.Combined:
                     CurrentDurationsEachStack[0] -= t;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-
-            var removedCnt = CurrentDurationsEachStack.RemoveAll(dur => dur <= 0);
-            var isRemovedStack = removedCnt > 0;
-
-            DefinedDuration = CurrentDurationsEachStack.Count > 0 ? CurrentDurationsEachStack[0] : 0.0f;
-
-            if (isRemovedStack)
-            {
-                switch (StackDurationPolicy)
-                {
-                    case StatEffectProfile.StackDurationPolicy.Independent:
-                        _currentStackCnt -= removedCnt;
-                        break;
-                    case StatEffectProfile.StackDurationPolicy.Combined:
+                    if (CurrentDurationsEachStack[0] <= 0)
+                    {
                         switch (StackOutPolicy)
                         {
                             case StatEffectProfile.StackOutPolicy.RemoveSingleStack:
                                 _currentStackCnt -= 1;
+                                if (_currentStackCnt > 0)
+                                {
+                                    CurrentDurationsEachStack[0] = DefinedDuration;
+                                    OnRemovedStack?.Invoke(this, 1);
+                                }
                                 break;
                             case StatEffectProfile.StackOutPolicy.ClearAllStack:
                                 _currentStackCnt = 0;
@@ -164,16 +150,17 @@ namespace GeneralGameDevKit.StatSystem
                             default:
                                 throw new ArgumentOutOfRangeException();
                         }
-
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
+                    }
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
 
-            var isExpired = _currentStackCnt == 0;
+            var isExpired = _currentStackCnt <= 0;
             if (isExpired)
-                NoticeExpired();
+            {
+                OnExpired?.Invoke(this);
+            }
             return isExpired;
         }
 
@@ -183,14 +170,23 @@ namespace GeneralGameDevKit.StatSystem
             return _currentStackCnt <= 0;
         }
 
+        public void ResetDuration()
+        {
+            for (var i = 0; i < CurrentDurationsEachStack.Count; i++)
+            {
+                CurrentDurationsEachStack[i] = DefinedDuration;
+            }
+        }
+
         public enum StatEffectUpdateResult
         {
             Add,
             Remove,
             Stack,
             RemoveStack,
+            ResetDuration,
             Refresh,
-            Fail
+            AddFail
         }
     }
 }

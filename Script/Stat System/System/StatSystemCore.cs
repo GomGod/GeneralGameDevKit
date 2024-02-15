@@ -164,7 +164,23 @@ namespace GeneralGameDevKit.StatSystem
             }
             return removeResult;
         }
-        
+
+        public int RemoveAllStatModifiers(StatModifier baseMod)
+        {
+            var removeCnt = 0;
+            while (_currentModifiers.Remove(baseMod))
+            {
+                removeCnt++;
+            }
+            
+            if (_statMap.TryGetValue(baseMod.TargetStatID, out var targetStatInfo))
+            {
+                OnStatApplyValueChanged?.Invoke(targetStatInfo, GetStatApplyValue(baseMod.TargetStatID));
+            }
+
+            return removeCnt;
+        }
+
         /// <summary>
         /// Modify the base stat value.
         /// </summary>

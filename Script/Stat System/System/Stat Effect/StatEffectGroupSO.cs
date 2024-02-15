@@ -65,6 +65,7 @@ namespace GeneralGameDevKit.StatSystem
 
                 fxInstance.DurationPolicy = durationPolicy;
                 fxInstance.DefinedDuration = (float) GetValueOverrideSourceTypeSwitch(constDuration, dynamicDuration, sourceKeyValueTable, durationOverrideSourceType);
+                fxInstance.ResetDuration();
 
                 fxInstance.UseStacking = useStacking;
                 fxInstance.MaxStack = (int) GetValueOverrideSourceTypeSwitch(constMaxStack, dynamicMaxStack, sourceKeyValueTable, stackOverrideSourceType);

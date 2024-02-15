@@ -48,7 +48,7 @@ namespace GeneralGameDevKit.StatSystem
         {
         }
 
-        public void ForceUpdate(string targetStat)
+        public void ForceInvokeStatUpdateEvent(string targetStat)
         {
             var statInfo = StatSystemCore.GetStatInfo(targetStat);
             if (statInfo == null)
@@ -99,16 +99,18 @@ namespace GeneralGameDevKit.StatSystem
                 var targetIdx = CurrentEffectInstances.FindIndex(i => i.EffectId.Equals(instanceToAdd.EffectId));
                 if (targetIdx >= 0)
                 {
-                    var result = CurrentEffectInstances[targetIdx].TryAddStack(instanceToAdd);
+                    var targetInstance = CurrentEffectInstances[targetIdx];
+                    var result = targetInstance.TryAddStack(instanceToAdd);
                     if (result is StatEffectInstance.StatEffectUpdateResult.Stack)
                     {
-                        ProcessStackedStatEffectInstance(instanceToAdd);
+                        ProcessStackedStatEffectInstance(targetInstance);
                     }
                     OnStatEffectUpdate?.Invoke(CurrentEffectInstances[targetIdx], result);
-                    return result is StatEffectInstance.StatEffectUpdateResult.Stack or StatEffectInstance.StatEffectUpdateResult.Refresh;
+                    return result is StatEffectInstance.StatEffectUpdateResult.Stack or StatEffectInstance.StatEffectUpdateResult.ResetDuration;
                 }
 
                 //first stack of effect
+                instanceToAdd.OnRemovedStack += OnRemovedEffectStack;
                 AddStatEffectInstance(instanceToAdd);
                 OnStatEffectUpdate?.Invoke(instanceToAdd, StatEffectInstance.StatEffectUpdateResult.Add);
                 return true;
@@ -146,19 +148,26 @@ namespace GeneralGameDevKit.StatSystem
             tagCollectionToReceive.ClearContainer();
             tagCollectionToReceive.MergeContainer(permanentTags);
             tagCollectionToReceive.MergeContainer(ManualAddedTags);
-            foreach (var fxInstance in CurrentEffectInstances)
-            {
-                tagCollectionToReceive.AddTags(fxInstance.EffectTagsToApply);
-            }
+            tagCollectionToReceive.MergeContainer(TemporaryTags);
         }
 
         public DevKitTagContainer GetApplyTags()
         {
             var ret = new DevKitTagContainer();
-            ret.MergeContainer(permanentTags);
-            ret.MergeContainer(ManualAddedTags);
-            ret.MergeContainer(TemporaryTags);
+            GetApplyTags(ref ret);
             return ret;
+        }
+
+        private void OnRemovedEffectStack(StatEffectInstance instance, int removedCnt)
+        {
+            if (!CurrentEffectInstances.Contains(instance))
+                return;
+            
+            for (var i = 0; i < removedCnt; i++)
+            {
+                RemoveModifiersInStatEffect(instance);
+            }
+            OnStatEffectUpdate?.Invoke(instance, StatEffectInstance.StatEffectUpdateResult.RemoveStack);
         }
 
         protected void AddStatEffectInstance(StatEffectInstance instanceToAdd)
@@ -185,28 +194,34 @@ namespace GeneralGameDevKit.StatSystem
         {
             foreach (var modifier in instanceToRemove.ModifiersToApply)
             {
-                StatSystemCore.RemoveStatModifier(modifier);
+                StatSystemCore.RemoveAllStatModifiers(modifier);
             }
 
             TemporaryTags.RemoveTags(instanceToRemove.EffectTagsToApply);
-            if (instanceToRemove.UseStacking)
-            {
-                if (instanceToRemove.StackOutPolicy is StatEffectProfile.StackOutPolicy.RemoveSingleStack)
-                {
-                    var isExpired = instanceToRemove.DurationPolicy is StatEffectProfile.DurationPolicy.Infinite
-                        ? instanceToRemove.ForceRemoveStack(1)
-                        : instanceToRemove.TickDuration(instanceToRemove.GetRepresentDuration());
-
-                    if (!isExpired)
-                    {
-                        OnStatEffectUpdate?.Invoke(instanceToRemove, StatEffectInstance.StatEffectUpdateResult.RemoveStack);
-                        return;
-                    }
-                }
-            }
-
             CurrentEffectInstances.Remove(instanceToRemove);
             OnStatEffectUpdate?.Invoke(instanceToRemove, StatEffectInstance.StatEffectUpdateResult.Remove);
+        }
+
+        public void RemoveModifiersInStatEffect(StatEffectInstance instanceSource)
+        {
+            foreach (var modifier in instanceSource.ModifiersToApply)
+            {
+                StatSystemCore.RemoveStatModifier(modifier);
+            }
+
+            TemporaryTags.RemoveTags(instanceSource.EffectTagsToApply);
+        }
+
+        public void TickEffectDuration(float t)
+        {
+            TempCollectionToStatEffectProcessing.Clear();
+            TempCollectionToStatEffectProcessing.AddRange(CurrentEffectInstances);
+            
+            foreach (var fxInstance in TempCollectionToStatEffectProcessing)
+            {
+                fxInstance.TickDuration(t);
+                OnStatEffectUpdate?.Invoke(fxInstance, StatEffectInstance.StatEffectUpdateResult.Refresh);
+            }
         }
 
         private void BroadcastApplyStatChangedEvent(StatInfo statInfo, float val)
