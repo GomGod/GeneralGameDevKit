@@ -22,19 +22,16 @@ namespace GeneralGameDevKit.StatSystem
         public List<StatModifier> ModifiersToApply = new();
 
         public StatEffectProfile.DurationPolicy DurationPolicy;
+
         public float DefinedDuration
         {
-            get => _headDuration;
+            get => _definedDuration;
             set
             {
-                _headDuration = value;
-                if (CurrentStackDuration.Count == 0)
+                _definedDuration = Mathf.Max(value, 0);
+                for (var i = 0; i < CurrentDurationsEachStack.Count; i++)
                 {
-                    CurrentStackDuration.Add(value);
-                }
-                else
-                {
-                    CurrentStackDuration[0] = _headDuration;
+                    CurrentDurationsEachStack[i] = Mathf.Min(CurrentDurationsEachStack[i], _definedDuration);
                 }
             }
         }
@@ -44,15 +41,21 @@ namespace GeneralGameDevKit.StatSystem
         public StatEffectProfile.StackOutPolicy StackOutPolicy;
         public StatEffectProfile.StackDurationPolicy StackDurationPolicy;
         
-        public readonly List<float> CurrentStackDuration = new();
-        private float _headDuration;
+        public readonly List<float> CurrentDurationsEachStack = new();
+        private float _definedDuration;
         private int _currentStackCnt = 1;
+
+        public StatEffectInstance(float initialDuration)
+        {
+            DefinedDuration = initialDuration;
+            CurrentDurationsEachStack.Add(DefinedDuration);
+        }
         
         public float GetRepresentDuration()
         {
             return DurationPolicy switch
             {
-                StatEffectProfile.DurationPolicy.Manual => CurrentStackDuration.Max(),
+                StatEffectProfile.DurationPolicy.Manual => CurrentDurationsEachStack.Count <= 0 ? 0 : CurrentDurationsEachStack.Max(),
                 StatEffectProfile.DurationPolicy.Infinite => float.MaxValue,
                 _ => throw new ArgumentOutOfRangeException()
             };
@@ -73,36 +76,34 @@ namespace GeneralGameDevKit.StatSystem
                 switch (fxInstance.StackDurationPolicy)
                 {
                     case StatEffectProfile.StackDurationPolicy.Independent:
-                        var minDur = CurrentStackDuration.Max();
+                        var minDur = CurrentDurationsEachStack.Max();
                         var minIdx = -1;
 
-                        for (var i = 0; i < CurrentStackDuration.Count; i++)
+                        for (var i = 0; i < CurrentDurationsEachStack.Count; i++)
                         {
-                            var isThisValMin = minDur > CurrentStackDuration[i];
+                            var isThisValMin = minDur > CurrentDurationsEachStack[i];
                             if (!isThisValMin) continue;
 
-                            minDur = CurrentStackDuration[i];
+                            minDur = CurrentDurationsEachStack[i];
                             minIdx = i;
                         }
 
                         if (minIdx >= 0)
                         {
-                            CurrentStackDuration[minIdx] = fxInstance.DefinedDuration;
+                            CurrentDurationsEachStack[minIdx] = fxInstance.DefinedDuration;
                         }
-
                         break;
                     case StatEffectProfile.StackDurationPolicy.Combined:
-                        CurrentStackDuration[0] = fxInstance.DefinedDuration;
+                        CurrentDurationsEachStack[0] = fxInstance.DefinedDuration;
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
-
                 return StatEffectUpdateResult.Refresh;
             }
 
             _currentStackCnt += 1;
-            CurrentStackDuration.Add(fxInstance.DefinedDuration);
+            CurrentDurationsEachStack.Add(fxInstance.DefinedDuration);
             return StatEffectUpdateResult.Stack;
         }
 
@@ -128,21 +129,21 @@ namespace GeneralGameDevKit.StatSystem
                 case StatEffectProfile.StackDurationPolicy.Independent:
                     for (var i = 0; i < MaxStack; i++)
                     {
-                        CurrentStackDuration[i] -= t;
+                        CurrentDurationsEachStack[i] -= t;
                     }
 
                     break;
                 case StatEffectProfile.StackDurationPolicy.Combined:
-                    CurrentStackDuration[0] -= t;
+                    CurrentDurationsEachStack[0] -= t;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
 
-            var removedCnt = CurrentStackDuration.RemoveAll(dur => dur <= 0);
+            var removedCnt = CurrentDurationsEachStack.RemoveAll(dur => dur <= 0);
             var isRemovedStack = removedCnt > 0;
 
-            _headDuration = CurrentStackDuration.Count > 0 ? CurrentStackDuration[0] : 0.0f;
+            DefinedDuration = CurrentDurationsEachStack.Count > 0 ? CurrentDurationsEachStack[0] : 0.0f;
 
             if (isRemovedStack)
             {

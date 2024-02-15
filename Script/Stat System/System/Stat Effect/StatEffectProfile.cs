@@ -34,7 +34,7 @@ namespace GeneralGameDevKit.StatSystem
 
         public StatEffectInstance BuildEffectInstance(BaseStatObject caster)
         {
-            return new StatEffectInstance
+            return new StatEffectInstance(duration)
             {
                 CasterObject = caster,
                 EffectId = profileID,
@@ -43,7 +43,6 @@ namespace GeneralGameDevKit.StatSystem
                 EffectDesc = effectDesc,
                 ModifiersToApply = statModifiers.Select(mod => mod.GetCopy()).ToList(),
                 EffectTagsToApply = new List<DevKitTag>(effectTags),
-                DefinedDuration = duration,
                 DurationPolicy = durationPolicy,
                 UseStacking = useStacking,
                 MaxStack = maxStack,
