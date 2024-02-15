@@ -130,7 +130,7 @@ namespace GeneralGameDevKit.StatSystem
 
         public void RemoveManualTag(DevKitTag tag, int cnt =1)
         {
-            for (var i = 0; i > cnt; i++)
+            for (var i = 0; i < cnt; i++)
             {
                 ManualAddedTags.RemoveTag(tag);
             }
