@@ -176,6 +176,12 @@ namespace GeneralGameDevKit.StatSystem
             return isExpired;
         }
 
+        public bool ForceRemoveStack(int stackToRemove)
+        {
+            _currentStackCnt -= stackToRemove;
+            return _currentStackCnt <= 0;
+        }
+
         public enum StatEffectUpdateResult
         {
             Add,

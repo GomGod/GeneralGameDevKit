@@ -189,11 +189,22 @@ namespace GeneralGameDevKit.StatSystem
             }
 
             TemporaryTags.RemoveTags(instanceToRemove.EffectTagsToApply);
-            if (instanceToRemove.UseStacking && instanceToRemove.GetCurrentStackCount() != 0)
+            if (instanceToRemove.UseStacking)
             {
-                OnStatEffectUpdate?.Invoke(instanceToRemove, StatEffectInstance.StatEffectUpdateResult.RemoveStack);
-                return;
+                if (instanceToRemove.StackOutPolicy is StatEffectProfile.StackOutPolicy.RemoveSingleStack)
+                {
+                    var isExpired = instanceToRemove.DurationPolicy is StatEffectProfile.DurationPolicy.Infinite
+                        ? instanceToRemove.ForceRemoveStack(1)
+                        : instanceToRemove.TickDuration(instanceToRemove.GetRepresentDuration());
+
+                    if (!isExpired)
+                    {
+                        OnStatEffectUpdate?.Invoke(instanceToRemove, StatEffectInstance.StatEffectUpdateResult.RemoveStack);
+                        return;
+                    }
+                }
             }
+
             CurrentEffectInstances.Remove(instanceToRemove);
             OnStatEffectUpdate?.Invoke(instanceToRemove, StatEffectInstance.StatEffectUpdateResult.Remove);
         }
