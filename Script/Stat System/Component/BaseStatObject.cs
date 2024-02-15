@@ -122,7 +122,7 @@ namespace GeneralGameDevKit.StatSystem
 
         public void AddManualTag(DevKitTag tag, int cnt =1)
         {
-            for (var i = 0; i > cnt; i++)
+            for (var i = 0; i < cnt; i++)
             {
                 ManualAddedTags.AddTag(tag);
             }
