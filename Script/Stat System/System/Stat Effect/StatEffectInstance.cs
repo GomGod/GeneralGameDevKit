@@ -56,7 +56,7 @@ namespace GeneralGameDevKit.StatSystem
         {
             return DurationPolicy switch
             {
-                StatEffectProfile.DurationPolicy.Manual => CurrentDurationsEachStack.Max(),
+                StatEffectProfile.DurationPolicy.Manual => CurrentDurationsEachStack.Min(),
                 StatEffectProfile.DurationPolicy.Infinite => float.MaxValue,
                 _ => throw new ArgumentOutOfRangeException()
             };
