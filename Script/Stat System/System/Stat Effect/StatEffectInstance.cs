@@ -123,7 +123,7 @@ namespace GeneralGameDevKit.StatSystem
             switch (StackDurationPolicy)
             {
                 case StatEffectProfile.StackDurationPolicy.Independent:
-                    for (var i = 0; i < MaxStack; i++)
+                    for (var i = 0; i < CurrentDurationsEachStack.Count; i++)
                     {
                         CurrentDurationsEachStack[i] -= t;
                     }
