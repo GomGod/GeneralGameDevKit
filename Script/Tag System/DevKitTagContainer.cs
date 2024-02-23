@@ -98,7 +98,7 @@ namespace Developer.GeneralGameDevKit.TagSystem
                 }
             }
 
-            foreach (var (tag, prev) in _tempCountDictionary)
+            foreach (var (tag, prev) in _tempCountDictionary.ToList())
             {
                 OnTagUpdate?.Invoke(tag, prev, GetTagCount(tag));
             }

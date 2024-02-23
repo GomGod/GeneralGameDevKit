@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using Debug = UnityEngine.Debug;
@@ -19,6 +20,7 @@ namespace GeneralGameDevKit.StatSystem
         private readonly Dictionary<string, StatInfo> _statMap = new();
         private readonly Dictionary<string, HashSet<StatConstraints>> _statConstraints = new();
         private readonly Dictionary<string, HashSet<StatConstraints>> _statConstraintsDependencies = new();
+        private readonly Dictionary<string, StatCustomGetter> _statCustomGetters = new();
         
         private readonly List<StatModifier> _currentModifiers = new();
         private uint _currentModifierTimestamp;
@@ -63,6 +65,16 @@ namespace GeneralGameDevKit.StatSystem
             ModifyStatBaseValue(targetStatID, GetBaseValue(targetStatID));
         }
 
+        public void SetCustomGetter(StatCustomGetter customGetter, string targetStat)
+        {
+            _statCustomGetters[targetStat] = customGetter;
+        }
+
+        public void RemoveCustomGetter(string targetStat)
+        {
+            _statCustomGetters.Remove(targetStat);
+        }
+        
         public void RemoveStatConstraints(StatConstraints constraintToRemove)
         {
             var targetStatID = constraintToRemove.targetStatID;
@@ -252,9 +264,8 @@ namespace GeneralGameDevKit.StatSystem
             if (_statMap.TryGetValue(targetId, out var targetStat)) 
                 return targetStat.StatValue;
             
-            Debug.Log($"There is no matching stat value. : {targetId}"); //todo : replace to error handling method
+            AddNewStat(targetId, 0f);
             return 0.0f;
-
         }
 
         /// <summary>
@@ -265,45 +276,71 @@ namespace GeneralGameDevKit.StatSystem
         /// <exception cref="ArgumentOutOfRangeException"></exception>
         public float GetStatApplyValue(string targetId)
         {
-            if (!_statMap.TryGetValue(targetId, out var targetStat))
+            var isCustomGetterExist = _statCustomGetters.TryGetValue(targetId, out var customGetter);
+
+            if (!isCustomGetterExist && !_statMap.TryGetValue(targetId, out _))
             {
                 Debug.Log($"There is no matching stat value.: {targetId}"); //todo : replace to error handling method
                 return 0.0f;
             }
 
-            _modifiersForCalc.Clear();
-            _modifiersForCalc.AddRange(_currentModifiers.Where(m => m.TargetStatID.Equals(targetId)));
-            _modifiersForCalc.Sort((ma, mb) =>
+            var baseValue = GetBaseValue(targetId);
+            var ret = isCustomGetterExist ? customGetter.GetProcessedValue(this, targetId, baseValue) : baseValue;
+            
+            if (isCustomGetterExist)
             {
-                var firstCompare = mb.Priority.CompareTo(ma.Priority);
-                return firstCompare != 0 ? firstCompare : ma.TimeStamp.CompareTo(mb.TimeStamp);
-            });
-
-            var baseValue = targetStat.StatValue;
-            var ret = targetStat.StatValue;
-            foreach (var mod in _modifiersForCalc)
-            {
-                switch (mod.CalcPolicy)
+                if (!customGetter.IgnoreModifier)
                 {
-                    case StatModifier.ModCalculationPolicy.CalcWithBase:
-                        ret += CalcTwoValue(baseValue, mod.Coefficient, mod.CalcOperator);
-                        break;
-                    case StatModifier.ModCalculationPolicy.CalcWithResult:
-                        ret = CalcTwoValue(ret, mod.Coefficient, mod.CalcOperator);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
+                    FillModifiers(customGetter.UseModifierHooks ? customGetter.StatIdToHookModifier : targetId);
+                }
+            }
+            else
+            {
+                FillModifiers(targetId);
+            }
+            ProcessModifiers();
+            ProcessConstraints();
+            return ret;
+
+            //---- local methods
+            void ProcessConstraints()
+            {
+                if (_statConstraints.TryGetValue(targetId, out var constraints))
+                {
+                    ret = constraints
+                        .Where(c => c.isApplyStatConstraintsActivated)
+                        .Aggregate(ret, (current, constraint) => constraint.ProcessApplyStat(this, current));
                 }
             }
 
-            if (_statConstraints.TryGetValue(targetId, out var constraints))
+            void ProcessModifiers()
             {
-                ret = constraints
-                    .Where(c => c.isApplyStatConstraintsActivated)
-                    .Aggregate(ret, (current, constraint) => constraint.ProcessApplyStat(this, current));
+                foreach (var mod in _modifiersForCalc)
+                {
+                    switch (mod.CalcPolicy)
+                    {
+                        case StatModifier.ModCalculationPolicy.CalcWithBase:
+                            ret += CalcTwoValue(baseValue, mod.Coefficient, mod.CalcOperator);
+                            break;
+                        case StatModifier.ModCalculationPolicy.CalcWithResult:
+                            ret = CalcTwoValue(ret, mod.Coefficient, mod.CalcOperator);
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                }
             }
 
-            return ret;
+            void FillModifiers(string targetStatId)
+            {
+                _modifiersForCalc.Clear();
+                _modifiersForCalc.AddRange(_currentModifiers.Where(m => m.TargetStatID.Equals(targetStatId)));
+                _modifiersForCalc.Sort((ma, mb) =>
+                {
+                    var firstCompare = mb.Priority.CompareTo(ma.Priority);
+                    return firstCompare != 0 ? firstCompare : ma.TimeStamp.CompareTo(mb.TimeStamp);
+                });
+            }
         }
 
         private float CalcTwoValue(float valA, float valB, StatCalcOperator operatorFlag)
@@ -313,6 +350,7 @@ namespace GeneralGameDevKit.StatSystem
                 StatCalcOperator.Add => valA + valB,
                 StatCalcOperator.Mul => valA * valB,
                 StatCalcOperator.Div => valA / valB,
+                StatCalcOperator.Sub => valA - valB,
                 _ => throw new ArgumentOutOfRangeException(nameof(operatorFlag), operatorFlag, null)
             };
         }
@@ -356,6 +394,7 @@ namespace GeneralGameDevKit.StatSystem
     {
         Add,
         Mul,
-        Div
+        Div,
+        Sub
     }
 }

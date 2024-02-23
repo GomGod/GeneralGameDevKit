@@ -11,7 +11,8 @@ namespace GeneralGameDevKit.StatSystem
     {
         [SerializeField] protected int id;
         [SerializeField] protected DevKitTagContainer permanentTags;
-        [SerializeField] protected List<StatConstraintsSO> statConstraints; 
+        [SerializeField] protected List<StatConstraintsSO> statConstraints;
+        [SerializeField] protected List<StatCustomGetterSO> statCustomGetters;
 
         protected readonly Dictionary<string, Action<StatInfo, float>> ApplyStatChangedCallbacks = new();
         protected Dictionary<string, Action<StatInfo, float>> BaseStatChangedCallbacks = new();
@@ -36,6 +37,11 @@ namespace GeneralGameDevKit.StatSystem
             foreach (var constraintsSO in statConstraints)
             {
                 constraintsSO.ApplyConstraintsToSystem(StatSystemCore);
+            }
+
+            foreach (var customGetterSO in statCustomGetters)
+            {
+                customGetterSO.ApplyCustomGetterToSystem(StatSystemCore);
             }
 
             StatSystemCore.OnStatApplyValueChanged -= BroadcastApplyStatChangedEvent;
