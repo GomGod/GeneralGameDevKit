@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace GeneralGameDevKit.ValueTableSystem.Internal.Editor
 {
-    [CustomPropertyDrawer(typeof(KeyTableAttribute))]
+    //[CustomPropertyDrawer(typeof(KeyTableAttribute))]
     public class KeyTablePropertyDrawer : PropertyDrawer
     {
         private const float Margin = 1;
@@ -42,8 +42,9 @@ namespace GeneralGameDevKit.ValueTableSystem.Internal.Editor
         }
         
         
-        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+       /* public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
+            
             var customAttributes = fieldInfo.GetCustomAttributes(false).ToList();
             var keyTableAttributeIdx = customAttributes.FindIndex(o => o is KeyTableAttribute);
             KeyTableAttribute keyTableAttribute;
@@ -61,7 +62,10 @@ namespace GeneralGameDevKit.ValueTableSystem.Internal.Editor
                 throw new Exception("Wrong Attribute Usage Exception");
             }
 
-            var paramsList = keyTableAttribute == null ? new List<string>() : KeyTableAssetManager.Instance.GetAllKeys(keyTableAttribute.AssetName).ToList();
+            var paramsList = keyTableAttribute == null ? new List<KeyEntity>() : KeyTableAssetManager.Instance.GetAllKeys(keyTableAttribute.AssetName).ToList();
+            if (!paramsList.Any())
+                return;
+            
             if (paramsList.Count == 0)
             {
                 EditorGUI.LabelField(position, label, EditorStyles.boldLabel);
@@ -71,12 +75,8 @@ namespace GeneralGameDevKit.ValueTableSystem.Internal.Editor
                 return;
             }
 
-            var currentStringValue = GetStringValueFromProperty(property);
-            var currentSelected = paramsList.IndexOf(currentStringValue);
-            if (currentSelected < 0)
-            {
-                currentSelected = 0;
-            }
+            var targetGuid = GetStringValueFromProperty(property);
+            var currentSelected = paramsList.FirstOrDefault(k => k.guid.Equals(targetGuid));
 
             var labelRect = position;
             labelRect.height = base.GetPropertyHeight(property, label);
@@ -89,12 +89,15 @@ namespace GeneralGameDevKit.ValueTableSystem.Internal.Editor
 
             EditorGUI.BeginChangeCheck();
             EditorGUI.LabelField(labelRect, $"Table Source : {keyTableAttribute.AssetName}", EditorStyles.boldLabel);
-            currentSelected = EditorGUI.Popup(popupRect, $"{property.displayName}", currentSelected, paramsList.ToArray());
-
+            var selectedIdx = paramsList.IndexOf(currentSelected);
+            if (selectedIdx < 0)
+                selectedIdx = 0;
+            
+            selectedIdx = EditorGUI.Popup(popupRect, property.displayName, selectedIdx, paramsList.Select(k => k.pathOfKey).ToArray());
             if (!EditorGUI.EndChangeCheck()) return;
             
-            var newSelectedKey = paramsList[currentSelected];
-            SetStringValueAtProperty(property, newSelectedKey);
-        }
+            var newSelectedKey = paramsList[selectedIdx];
+            SetStringValueAtProperty(property, newSelectedKey.guid);
+        }*/
     }
 }

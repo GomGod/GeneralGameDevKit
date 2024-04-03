@@ -13,7 +13,7 @@ namespace Developer.GeneralGameDevKit.TagSystem
 
         private void Awake()
         {
-            DevKitTag.LoadTagCollection(tagTableAsset.GetAllKeys().Select(path => new DevKitTag(path)));
+            DevKitTag.LoadTagCollection(tagTableAsset.GetAllKeys().Select(key => new DevKitTag(key.guid)));
         }
     }
 }

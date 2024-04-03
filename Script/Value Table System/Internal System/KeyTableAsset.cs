@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Text;
 using UnityEngine;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace GeneralGameDevKit.ValueTableSystem.Internal
 {
@@ -16,170 +18,103 @@ namespace GeneralGameDevKit.ValueTableSystem.Internal
     [CreateAssetMenu(fileName = "KeyTableAsset", menuName = "General Game Dev Kit/Value Table System/Management/Key Table Asset")]
     public class KeyTableAsset : ScriptableObject
     {
-        public static readonly string RootName = "Keys";
+        [SerializeField] public List<KeyEntity> keys;
+        [SerializeField] public char separator = '/';
+        
+        public IEnumerable<KeyEntity> GetAllKeys() => keys;
+        private KeyEntity FindKeyEntity(string guid) => keys.FirstOrDefault(k => k.guid.Equals(guid));
+        private KeyEntity FindKeyByPath(string path) => keys.FirstOrDefault(k => k.pathOfKey.Equals(path));
 
-        [Header("You can edit with this field, but it's not recommended."), SerializeField]
-        private List<DefinedKey> keys = new ();
-
-        private KeyNode _root;
-        private readonly StringBuilder _sb = new();
-
-        public IEnumerable<string> GetAllKeys() => keys.Select(p => p.GetFullPathOfKey());
-
-        public KeyNode BuildKeyTree()
+        public void TestAdd()
         {
-            SetEmptyRoot();
-          
-            var keysToAdd = new List<DefinedKey>();
-            if(keys != null)
-                keysToAdd.AddRange(keys);
-            
-            foreach (var param in keysToAdd)
-            {
-                param.RefreshParameterPath();
-                AddKeyByPath(param.GetFullPathOfKey());
-            }
-
-            return _root;
+            AddNewKey("Hello/KeyTableSystem");
+            AddNewKey("Hello/KeyTableSystem1");
+            AddNewKey("Hello/KeyTableSystem2");
+            AddNewKey("Hello/KeyTableSystem3");
+            AddNewKey("Hello/KeyTableSystem/A");
+            AddNewKey("Hello/KeyTableSystem/B");
+            AddNewKey("Hello/KeyTableSystem/B/A");
+            AddNewKey("Hello/KeyTableSystem/A/B");
+            AddNewKey("Hello/KeyTableSystem/A/A/A");
+            AddNewKey("Hello/KeyTableSystem/A/A/A");
+            AddNewKey("Hello/KeyTableSystem/A/A/A");
         }
-
+        
+        public List<KeyEntity> GetKeysSameDepth(int depth)
+        {
+            return keys.Where(k => k.splitPath.Length-1 == depth).ToList();
+        }
+        
         public void ClearAllKeys()
         {
-            SetEmptyRoot();
             keys.Clear();
         }
 
-        private void SetEmptyRoot()
+        public void RefreshOrder()
         {
-            _root = new KeyNode(RootName);
+            keys.Sort((ak, bk) =>
+            {
+                var depthCompare = ak.splitPath.Length.CompareTo(bk.splitPath.Length);
+                return depthCompare != 0
+                    ? depthCompare
+                    : string.Compare(ak.pathOfKey, bk.pathOfKey, StringComparison.Ordinal);
+            });
+
+            var newOrder = 0;
+            keys.ForEach(k => k.order = newOrder++);
         }
 
-        public void AddKeyByPath(string path)
+#if UNITY_EDITOR
+        public bool AddNewKey(string path)
         {
-            var newDefinedParam = new DefinedKey(path);
-            _sb.Clear();
-            foreach (var pathStr in newDefinedParam.GetSplitPath())
+            if (FindKeyByPath(path))
             {
-                _sb.Append(pathStr);
-                var pathCurrent = _sb.ToString();
-                if (!keys.Any(k => k.GetFullPathOfKey().Equals(pathCurrent)))
-                {
-                    var newKey = new DefinedKey(pathCurrent);
-                    keys.Add(newKey);
-                }
-
-                _sb.Append("/");
-            }
-
-            if (_root == null)
-            {
-                SetEmptyRoot();
-            }
-
-            _root?.BeginAddNode(newDefinedParam);
-            keys.Sort((ka, kb) => string.Compare(ka.GetFullPathOfKey(), kb.GetFullPathOfKey(), StringComparison.Ordinal));
-        }
-
-        public void RemoveKeyByPath(string path)
-        {
-            var definedParamToRemove = new DefinedKey(path);
-            var removeResult = _root.BeginRemoveNode(definedParamToRemove);
-            if (removeResult)
-            {
-                var depthOfPath = path.Split('/').Length;
-                keys.RemoveAll(p => p.CheckIsContainPath(path, 0, depthOfPath));
-            }
-
-            Debug.Log($"Target Key - {path}, Remove Result - {removeResult.ToString()}");
-        }
-    }
-
-    public class KeyNode
-    {
-        private static Queue<string> _queueForTreeProcessing = new();
-
-        private readonly string _pathString;
-        private readonly List<KeyNode> _siblings = new();
-
-        public KeyNode(string pathString)
-        {
-            _pathString = pathString;
-        }
-
-        public string GetPathString() => _pathString;
-
-        public List<KeyNode> GetSiblings() => new(_siblings);
-
-        public void BeginAddNode(DefinedKey defKey)
-        {
-            BuildQueueForTreeProcessing(defKey, ref _queueForTreeProcessing);
-            AddNode(ref _queueForTreeProcessing);
-        }
-
-        public bool BeginRemoveNode(DefinedKey defKey)
-        {
-            BuildQueueForTreeProcessing(defKey, ref _queueForTreeProcessing);
-            return RemoveNode(ref _queueForTreeProcessing);
-        }
-
-        private static void BuildQueueForTreeProcessing(DefinedKey defKey, ref Queue<string> stringPathQueue)
-        {
-            var fullSplitPath = defKey.GetSplitPath();
-            stringPathQueue.Clear();
-            foreach (var path in fullSplitPath)
-            {
-                stringPathQueue.Enqueue(path);
-            }
-        }
-
-        private void AddNode(ref Queue<string> splitPathQueue)
-        {
-            if (splitPathQueue == null)
-            {
-                throw new NullReferenceException($"Null stack detected during {MethodBase.GetCurrentMethod()?.ReflectedType?.FullName ?? "AddNode()"} in KeyNode."); //todo : err handling
-            }
-
-            if (splitPathQueue.Count == 0)
-            {
-                return;
-            }
-
-            var nextPath = splitPathQueue.Dequeue();
-            var siblingIdx = _siblings.FindIndex(n => n._pathString.Equals(nextPath));
-            if (siblingIdx >= 0)
-            {
-                _siblings[siblingIdx].AddNode(ref splitPathQueue);
-            }
-            else
-            {
-                var newNode = new KeyNode(nextPath);
-                _siblings.Add(newNode);
-                newNode.AddNode(ref splitPathQueue);
-            }
-        }
-
-        private bool RemoveNode(ref Queue<string> splitPathQueue)
-        {
-            if (splitPathQueue == null)
-            {
-                throw new NullReferenceException($"Null stack detected during {MethodBase.GetCurrentMethod()?.ReflectedType?.FullName ?? "AddNode()"} in KeyNode."); //todo : err handling
-            }
-
-            var nextPath = splitPathQueue.Dequeue();
-            var siblingIdx = _siblings.FindIndex(n => n._pathString.Equals(nextPath));
-
-            if (siblingIdx < 0)
-            {
+                Debug.LogError("Paths cannot be duplicate");
                 return false;
             }
+            
+            var newKey = CreateInstance<KeyEntity>();
+            newKey.AllocateGuid();
+            newKey.UpdatePath(path, separator);
 
-            if (splitPathQueue.Count == 0)
+            var superPath = string.Empty;
+            foreach (var routePath in newKey.splitPath)
             {
-                _siblings.RemoveAt(siblingIdx);
-                return true;
+                superPath = string.IsNullOrEmpty(superPath) ? routePath : string.Concat(superPath, separator.ToString(), routePath);
+
+                if (FindKeyByPath(superPath))
+                    continue;
+
+                var superPathKey = CreateInstance<KeyEntity>();
+                superPathKey.name = nameof(KeyEntity);
+                superPathKey.AllocateGuid();
+                superPathKey.UpdatePath(superPath, separator);
+
+                keys.Add(superPathKey);
+                AssetDatabase.AddObjectToAsset(superPathKey, this);
+            }
+            RefreshOrder();
+            AssetDatabase.SaveAssets();
+            return true;
+        }
+
+        public bool RemoveKey(string guid)
+        {
+            var targetKey = FindKeyEntity(guid);
+            if (!targetKey)
+                return false;
+
+            var removeTargets = keys.Where(k => k.IsSubPathOf(targetKey.pathOfKey)).ToList();
+            foreach (var key in removeTargets)
+            {
+                AssetDatabase.RemoveObjectFromAsset(key);
             }
 
-            return _siblings[siblingIdx].RemoveNode(ref splitPathQueue);
+            AssetDatabase.SaveAssets();
+            keys.RemoveAll(removeTargets.Contains);
+            RefreshOrder();
+            return true;
         }
+#endif
     }
 }

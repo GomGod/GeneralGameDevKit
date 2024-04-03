@@ -1,0 +1,246 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-7748475751015745620
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b61ff2274215de4a9acb439e90def4a, type: 3}
+  m_Name: KeyEntity
+  m_EditorClassIdentifier: 
+  order: 0
+  guid: 5c844323-8093-4588-82b5-59707099eb54
+  pathOfKey: Hello
+  splitPath:
+  - Hello
+  currentSeparator: 47
+--- !u!114 &-6786570640460237722
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b61ff2274215de4a9acb439e90def4a, type: 3}
+  m_Name: KeyEntity
+  m_EditorClassIdentifier: 
+  order: 2
+  guid: c7476369-02aa-439d-a50b-9dfb7a3f9950
+  pathOfKey: Hello/KeyTableSystem1
+  splitPath:
+  - Hello
+  - KeyTableSystem1
+  currentSeparator: 47
+--- !u!114 &-4775953033672892190
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b61ff2274215de4a9acb439e90def4a, type: 3}
+  m_Name: KeyEntity
+  m_EditorClassIdentifier: 
+  order: 10
+  guid: ae300028-1102-4041-a2eb-79348dc8f4ae
+  pathOfKey: Hello/KeyTableSystem/A/A/A
+  splitPath:
+  - Hello
+  - KeyTableSystem
+  - A
+  - A
+  - A
+  currentSeparator: 47
+--- !u!114 &-1342930226840556898
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b61ff2274215de4a9acb439e90def4a, type: 3}
+  m_Name: KeyEntity
+  m_EditorClassIdentifier: 
+  order: 9
+  guid: 5ee096b5-c6e7-4aed-8946-821c5762428d
+  pathOfKey: Hello/KeyTableSystem/B/A
+  splitPath:
+  - Hello
+  - KeyTableSystem
+  - B
+  - A
+  currentSeparator: 47
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 453cc5d122144ed4ebd0bae1f497f6c2, type: 3}
+  m_Name: Test
+  m_EditorClassIdentifier: 
+  keys:
+  - {fileID: -7748475751015745620}
+  - {fileID: 1412820335978643635}
+  - {fileID: -6786570640460237722}
+  - {fileID: 7611178848852244656}
+  - {fileID: 4162305656775112083}
+  - {fileID: 1691038162179227121}
+  - {fileID: 4495043696425794484}
+  - {fileID: 3673592544563961042}
+  - {fileID: 3191195857589055129}
+  - {fileID: -1342930226840556898}
+  - {fileID: -4775953033672892190}
+  separator: 47
+--- !u!114 &1412820335978643635
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b61ff2274215de4a9acb439e90def4a, type: 3}
+  m_Name: KeyEntity
+  m_EditorClassIdentifier: 
+  order: 1
+  guid: 4a3c0fab-d42e-4dec-ad32-c8eb63f77dfe
+  pathOfKey: Hello/KeyTableSystem
+  splitPath:
+  - Hello
+  - KeyTableSystem
+  currentSeparator: 47
+--- !u!114 &1691038162179227121
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b61ff2274215de4a9acb439e90def4a, type: 3}
+  m_Name: KeyEntity
+  m_EditorClassIdentifier: 
+  order: 5
+  guid: 6455944b-7a93-4963-8317-216cb3fef235
+  pathOfKey: Hello/KeyTableSystem/A
+  splitPath:
+  - Hello
+  - KeyTableSystem
+  - A
+  currentSeparator: 47
+--- !u!114 &3191195857589055129
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b61ff2274215de4a9acb439e90def4a, type: 3}
+  m_Name: KeyEntity
+  m_EditorClassIdentifier: 
+  order: 8
+  guid: c5144d12-e91e-4889-9db4-a8b08d8553e1
+  pathOfKey: Hello/KeyTableSystem/A/B
+  splitPath:
+  - Hello
+  - KeyTableSystem
+  - A
+  - B
+  currentSeparator: 47
+--- !u!114 &3673592544563961042
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b61ff2274215de4a9acb439e90def4a, type: 3}
+  m_Name: KeyEntity
+  m_EditorClassIdentifier: 
+  order: 7
+  guid: 75b522ce-7f82-4877-aa90-f74f4f24fa2b
+  pathOfKey: Hello/KeyTableSystem/A/A
+  splitPath:
+  - Hello
+  - KeyTableSystem
+  - A
+  - A
+  currentSeparator: 47
+--- !u!114 &4162305656775112083
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b61ff2274215de4a9acb439e90def4a, type: 3}
+  m_Name: KeyEntity
+  m_EditorClassIdentifier: 
+  order: 4
+  guid: ccf5289f-e49d-466b-83aa-9fa935304759
+  pathOfKey: Hello/KeyTableSystem3
+  splitPath:
+  - Hello
+  - KeyTableSystem3
+  currentSeparator: 47
+--- !u!114 &4495043696425794484
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b61ff2274215de4a9acb439e90def4a, type: 3}
+  m_Name: KeyEntity
+  m_EditorClassIdentifier: 
+  order: 6
+  guid: 6452ffad-9e44-4c69-ae0c-247e05000725
+  pathOfKey: Hello/KeyTableSystem/B
+  splitPath:
+  - Hello
+  - KeyTableSystem
+  - B
+  currentSeparator: 47
+--- !u!114 &7611178848852244656
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b61ff2274215de4a9acb439e90def4a, type: 3}
+  m_Name: KeyEntity
+  m_EditorClassIdentifier: 
+  order: 3
+  guid: 164ed668-8cd5-4968-a529-1a2d6c9383f7
+  pathOfKey: Hello/KeyTableSystem2
+  splitPath:
+  - Hello
+  - KeyTableSystem2
+  currentSeparator: 47
