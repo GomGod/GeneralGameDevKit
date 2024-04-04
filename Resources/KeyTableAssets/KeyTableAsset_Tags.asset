@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: KeyEntity
   m_EditorClassIdentifier: 
   order: 7
-  guid: d8ff815d-f198-4337-b2c8-85c0ca252d40
-  pathOfKey: A1/B/C/D
+  guid: 
+  pathOfKey: 
   splitPath:
   - A1
   - B
@@ -49,7 +49,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 453cc5d122144ed4ebd0bae1f497f6c2, type: 3}
-  m_Name: KeyTableAsset
+  m_Name: KeyTableAsset_Tags
   m_EditorClassIdentifier: 
   separator: 47
   keys:

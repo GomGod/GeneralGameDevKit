@@ -17,10 +17,11 @@ MonoBehaviour:
   effectName: 
   effectDesc: 
   statModifiers: []
-  effectTags: []
+  effectTags:
+  - tagKey: 1c4be37c-f628-4b0a-a27a-39001fab463a
   duration: 0
   durationPolicy: 0
+  useStacking: 0
   maxStack: 0
-  stackingPolicy: 0
   stackOutPolicy: 0
   stackDurationPolicy: 0

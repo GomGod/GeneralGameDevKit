@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace GeneralGameDevKit.ValueTableSystem.Internal.Editor
 {
-    //[CustomPropertyDrawer(typeof(KeyTableAttribute))]
+    [CustomPropertyDrawer(typeof(KeyTableAttribute))]
     public class KeyTablePropertyDrawer : PropertyDrawer
     {
         private const float Margin = 1;
@@ -41,10 +41,8 @@ namespace GeneralGameDevKit.ValueTableSystem.Internal.Editor
             }
         }
         
-        
-       /* public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
-        {
-            
+        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+        {            
             var customAttributes = fieldInfo.GetCustomAttributes(false).ToList();
             var keyTableAttributeIdx = customAttributes.FindIndex(o => o is KeyTableAttribute);
             KeyTableAttribute keyTableAttribute;
@@ -63,9 +61,6 @@ namespace GeneralGameDevKit.ValueTableSystem.Internal.Editor
             }
 
             var paramsList = keyTableAttribute == null ? new List<KeyEntity>() : KeyTableAssetManager.Instance.GetAllKeys(keyTableAttribute.AssetName).ToList();
-            if (!paramsList.Any())
-                return;
-            
             if (paramsList.Count == 0)
             {
                 EditorGUI.LabelField(position, label, EditorStyles.boldLabel);
@@ -76,7 +71,7 @@ namespace GeneralGameDevKit.ValueTableSystem.Internal.Editor
             }
 
             var targetGuid = GetStringValueFromProperty(property);
-            var currentSelected = paramsList.FirstOrDefault(k => k.guid.Equals(targetGuid));
+            var currentSelectedEntity = paramsList.FirstOrDefault(k => k.guid.Equals(targetGuid));
 
             var labelRect = position;
             labelRect.height = base.GetPropertyHeight(property, label);
@@ -86,10 +81,9 @@ namespace GeneralGameDevKit.ValueTableSystem.Internal.Editor
             popupRect.height = base.GetPropertyHeight(property, label);
             popupRect.y += popupRect.height + Margin;
 
-
             EditorGUI.BeginChangeCheck();
             EditorGUI.LabelField(labelRect, $"Table Source : {keyTableAttribute.AssetName}", EditorStyles.boldLabel);
-            var selectedIdx = paramsList.IndexOf(currentSelected);
+            var selectedIdx = paramsList.IndexOf(currentSelectedEntity);
             if (selectedIdx < 0)
                 selectedIdx = 0;
             
@@ -98,6 +92,6 @@ namespace GeneralGameDevKit.ValueTableSystem.Internal.Editor
             
             var newSelectedKey = paramsList[selectedIdx];
             SetStringValueAtProperty(property, newSelectedKey.guid);
-        }*/
+        }
     }
 }

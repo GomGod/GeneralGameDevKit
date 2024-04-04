@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using GeneralGameDevKit.Utils;
+using UnityEditor;
 using UnityEngine;
 
 namespace GeneralGameDevKit.ValueTableSystem.Internal
@@ -15,13 +16,14 @@ namespace GeneralGameDevKit.ValueTableSystem.Internal
         
         public KeyTableAssetManager()
         {
-            var loadedTableAssets = Resources.LoadAll<KeyTableAsset>("KeyTableAssets");
-            if (loadedTableAssets.Length <= 0) return;
+            var tableAssetGuids = AssetDatabase.FindAssets($"t:{nameof(KeyTableAsset)}");
+            if (tableAssetGuids.Length <= 0) return;
             
             _loadedTableAssets.Clear();
-            foreach (var tableAsset in loadedTableAssets)
+            foreach (var guid in tableAssetGuids)
             {
-                _loadedTableAssets.Add(tableAsset.name, tableAsset);
+                var loadedTableAsset = AssetDatabase.LoadAssetAtPath<KeyTableAsset>(AssetDatabase.GUIDToAssetPath(guid));
+                _loadedTableAssets.Add(loadedTableAsset.name, loadedTableAsset);
             }
         }
 

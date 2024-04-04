@@ -1,4 +1,5 @@
-﻿using GeneralGameDevKit.ValueTableSystem.Internal;
+﻿using System;
+using GeneralGameDevKit.ValueTableSystem.Internal;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
@@ -58,6 +59,10 @@ namespace GeneralGameDevKit.Script.Editor
         {
             if (!keyToChange)
             {
+                _txtFieldGuid.value = string.Empty;
+                _txtFieldCurrentPath.value = string.Empty;
+                _txtPathToEdit.value = string.Empty;
+
                 SetInspectorActive(false);
                 return;
             }

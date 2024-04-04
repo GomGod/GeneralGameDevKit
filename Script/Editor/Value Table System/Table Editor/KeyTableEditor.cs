@@ -1,9 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using GeneralGameDevKit.Script.Editor;
 using GeneralGameDevKit.ValueTableSystem.Internal;
 using UnityEditor;
+using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -12,6 +12,9 @@ public class KeyTableEditor : EditorWindow
     [SerializeField] private StyleSheet mStyleSheet;
     [SerializeField] private VisualTreeAsset mVisualTreeAsset;
 
+    private const string k_KeyTableField = "KeyTableAssetField";
+
+    private ObjectField _keyTableField;
     private KeyTableStructureView _structureView;
     private KeyTableInspectorView _inspectorView;
     private KeyTableControlView _controlView;
@@ -35,16 +38,19 @@ public class KeyTableEditor : EditorWindow
         _structureView = root.Q<KeyTableStructureView>();
         _inspectorView = root.Q<KeyTableInspectorView>();
         _controlView = root.Q<KeyTableControlView>();
+        _keyTableField = root.Q<ObjectField>(k_KeyTableField);
         
         _structureView.OnSelectedChange = OnTargetKeySelectionChanged;
 
         _controlView.OnButtonAddClicked = AddKey;
         _controlView.OnButtonEditClicked = EditKey;
         _controlView.OnButtonRemoveClicked = RemoveKey;
-        
+
+        _keyTableField.RegisterCallback<ChangeEvent<Object>>(OnEditTargetChanged);
         _inspectorView.ChangeCurrentTargetKeyEntity(null);
-        OnSelectionChange();
-        UpdateViewEnableState();
+        
+        OnEditTargetChanged(null);
+        UpdateViewEnableState();    
     }
 
     private void AddKey()
@@ -98,26 +104,12 @@ public class KeyTableEditor : EditorWindow
         UpdateViewEnableState();
     }
 
-    //Unity Event
-    private void OnSelectionChange()
+    private void OnEditTargetChanged(ChangeEvent<Object> evt)
     {
-        if (!Selection.activeObject)
-        {
-            _currentEditTarget = null;
-            UpdateViewEnableState();
-            return;
-        }
-
-        var selectedAsset = Selection.activeObject as KeyTableAsset;
-        if (!selectedAsset)
-        {
-            _currentEditTarget = null;
-            UpdateViewEnableState();
-            return;
-        }
-
-        _currentEditTarget = selectedAsset;
-        _structureView.PopulateView(selectedAsset);
+        var targetTable = evt?.newValue as KeyTableAsset;
+        _currentEditTarget = targetTable;
+        if (_currentEditTarget)
+            _structureView.PopulateView(_currentEditTarget);
         UpdateViewEnableState();
     }
 
