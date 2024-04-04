@@ -1,48 +1,62 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using GeneralGameDevKit.ValueTableSystem.Internal;
-using UnityEditor;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace GeneralGameDevKit.Script.Editor
 {
     public class KeyTableStructureView : VisualElement
     {
+        public Action<List<KeyEntity>> OnSelectedChange;
+
         public new class UxmlFactory : UxmlFactory<KeyTableStructureView, UxmlTraits>
         {
         }
 
         private TreeView _treeView;
-        private KeyTableAsset _targetTable;
 
         public KeyTableStructureView()
         {
-            _treeView = new TreeView();
-            Insert(0, _treeView);
-            _treeView.selectedIndicesChanged += Highligh;
-            _treeView.makeItem = () => new Label();
-            _treeView.bindItem = (elem, idx) =>
+            _treeView = new TreeView
             {
-                ((Label) elem).text = _treeView.GetItemDataForIndex<KeyEntity>(idx).GetLeaf();
+                makeItem = () => new Label
+                {
+                    style =
+                    {
+                        unityTextAlign = TextAnchor.LowerLeft
+                    }
+                }
             };
+
+            _treeView.bindItem = (elem, idx) => { ((Label) elem).text = _treeView.GetItemDataForIndex<KeyEntity>(idx).GetLeaf(); };
+            _treeView.selectedIndicesChanged += OnSelectedItem;
+            Insert(0, _treeView);
         }
 
-        private void Highligh(IEnumerable<int> obj)
+        private void OnSelectedItem(IEnumerable<int> obj)
         {
-            foreach (var idx in obj)
-            {
-                EditorGUIUtility.PingObject(_treeView.GetItemDataForIndex<KeyEntity>(idx));
-            }
+            var selectedItems = obj.Select(idx => _treeView.GetItemDataForIndex<KeyEntity>(idx)).ToList();
+            OnSelectedChange?.Invoke(selectedItems);
         }
 
         public void PopulateView(KeyTableAsset assetToEdit)
         {
-            _targetTable = assetToEdit;
-            if (!_targetTable)
+            if (!assetToEdit)
                 return;
 
-            var rootViewData = _targetTable.GetKeysSameDepth(0).Select(k => k.GetTreeViewItemData(_targetTable)).ToList();
+            var rootViewData = assetToEdit.GetKeysSameDepth(0)?.Select(k => k.GetTreeViewItemData(assetToEdit)).ToList();
+            if (rootViewData == null)
+                return;
+            
             _treeView.SetRootItems(rootViewData);
+            _treeView.RefreshItems();
+        }
+
+        public void ClearTreeView()
+        {
+            _treeView.SetRootItems(new List<TreeViewItemData<KeyEntity>>());
             _treeView.RefreshItems();
         }
 

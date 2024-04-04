@@ -1,171 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-7748475751015745620
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b61ff2274215de4a9acb439e90def4a, type: 3}
-  m_Name: KeyEntity
-  m_EditorClassIdentifier: 
-  order: 0
-  guid: 5c844323-8093-4588-82b5-59707099eb54
-  pathOfKey: Hello
-  splitPath:
-  - Hello
-  currentSeparator: 47
---- !u!114 &-6786570640460237722
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b61ff2274215de4a9acb439e90def4a, type: 3}
-  m_Name: KeyEntity
-  m_EditorClassIdentifier: 
-  order: 2
-  guid: c7476369-02aa-439d-a50b-9dfb7a3f9950
-  pathOfKey: Hello/KeyTableSystem1
-  splitPath:
-  - Hello
-  - KeyTableSystem1
-  currentSeparator: 47
---- !u!114 &-4775953033672892190
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b61ff2274215de4a9acb439e90def4a, type: 3}
-  m_Name: KeyEntity
-  m_EditorClassIdentifier: 
-  order: 10
-  guid: ae300028-1102-4041-a2eb-79348dc8f4ae
-  pathOfKey: Hello/KeyTableSystem/A/A/A
-  splitPath:
-  - Hello
-  - KeyTableSystem
-  - A
-  - A
-  - A
-  currentSeparator: 47
---- !u!114 &-1342930226840556898
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b61ff2274215de4a9acb439e90def4a, type: 3}
-  m_Name: KeyEntity
-  m_EditorClassIdentifier: 
-  order: 9
-  guid: 5ee096b5-c6e7-4aed-8946-821c5762428d
-  pathOfKey: Hello/KeyTableSystem/B/A
-  splitPath:
-  - Hello
-  - KeyTableSystem
-  - B
-  - A
-  currentSeparator: 47
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 453cc5d122144ed4ebd0bae1f497f6c2, type: 3}
-  m_Name: Test
-  m_EditorClassIdentifier: 
-  keys:
-  - {fileID: -7748475751015745620}
-  - {fileID: 1412820335978643635}
-  - {fileID: -6786570640460237722}
-  - {fileID: 7611178848852244656}
-  - {fileID: 4162305656775112083}
-  - {fileID: 1691038162179227121}
-  - {fileID: 4495043696425794484}
-  - {fileID: 3673592544563961042}
-  - {fileID: 3191195857589055129}
-  - {fileID: -1342930226840556898}
-  - {fileID: -4775953033672892190}
-  separator: 47
---- !u!114 &1412820335978643635
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b61ff2274215de4a9acb439e90def4a, type: 3}
-  m_Name: KeyEntity
-  m_EditorClassIdentifier: 
-  order: 1
-  guid: 4a3c0fab-d42e-4dec-ad32-c8eb63f77dfe
-  pathOfKey: Hello/KeyTableSystem
-  splitPath:
-  - Hello
-  - KeyTableSystem
-  currentSeparator: 47
---- !u!114 &1691038162179227121
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b61ff2274215de4a9acb439e90def4a, type: 3}
-  m_Name: KeyEntity
-  m_EditorClassIdentifier: 
-  order: 5
-  guid: 6455944b-7a93-4963-8317-216cb3fef235
-  pathOfKey: Hello/KeyTableSystem/A
-  splitPath:
-  - Hello
-  - KeyTableSystem
-  - A
-  currentSeparator: 47
---- !u!114 &3191195857589055129
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b61ff2274215de4a9acb439e90def4a, type: 3}
-  m_Name: KeyEntity
-  m_EditorClassIdentifier: 
-  order: 8
-  guid: c5144d12-e91e-4889-9db4-a8b08d8553e1
-  pathOfKey: Hello/KeyTableSystem/A/B
-  splitPath:
-  - Hello
-  - KeyTableSystem
-  - A
-  - B
-  currentSeparator: 47
---- !u!114 &3673592544563961042
+--- !u!114 &-7518309011923482809
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -178,15 +13,15 @@ MonoBehaviour:
   m_Name: KeyEntity
   m_EditorClassIdentifier: 
   order: 7
-  guid: 75b522ce-7f82-4877-aa90-f74f4f24fa2b
-  pathOfKey: Hello/KeyTableSystem/A/A
+  guid: d8ff815d-f198-4337-b2c8-85c0ca252d40
+  pathOfKey: A1/B/C/D
   splitPath:
-  - Hello
-  - KeyTableSystem
-  - A
-  - A
+  - A1
+  - B
+  - C
+  - D
   currentSeparator: 47
---- !u!114 &4162305656775112083
+--- !u!114 &-220332420275031068
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -198,14 +33,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b61ff2274215de4a9acb439e90def4a, type: 3}
   m_Name: KeyEntity
   m_EditorClassIdentifier: 
-  order: 4
-  guid: ccf5289f-e49d-466b-83aa-9fa935304759
-  pathOfKey: Hello/KeyTableSystem3
+  order: 0
+  guid: 8c4f6a11-99ec-4775-839e-0c6e6787e3c2
+  pathOfKey: A
   splitPath:
-  - Hello
-  - KeyTableSystem3
+  - A
   currentSeparator: 47
---- !u!114 &4495043696425794484
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 453cc5d122144ed4ebd0bae1f497f6c2, type: 3}
+  m_Name: KeyTableAsset
+  m_EditorClassIdentifier: 
+  separator: 47
+  keys:
+  - {fileID: -220332420275031068}
+  - {fileID: 4014338422616729844}
+  - {fileID: 322538407125192600}
+  - {fileID: 3125418185440986068}
+  - {fileID: 6469103310965891452}
+  - {fileID: 7233471425713298299}
+  - {fileID: 4258157551775935432}
+  - {fileID: -7518309011923482809}
+--- !u!114 &322538407125192600
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -217,15 +73,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b61ff2274215de4a9acb439e90def4a, type: 3}
   m_Name: KeyEntity
   m_EditorClassIdentifier: 
-  order: 6
-  guid: 6452ffad-9e44-4c69-ae0c-247e05000725
-  pathOfKey: Hello/KeyTableSystem/B
+  order: 2
+  guid: 43c533cf-74f7-4884-bca2-8c185374400d
+  pathOfKey: A/B
   splitPath:
-  - Hello
-  - KeyTableSystem
+  - A
   - B
   currentSeparator: 47
---- !u!114 &7611178848852244656
+--- !u!114 &3125418185440986068
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -238,9 +93,88 @@ MonoBehaviour:
   m_Name: KeyEntity
   m_EditorClassIdentifier: 
   order: 3
-  guid: 164ed668-8cd5-4968-a529-1a2d6c9383f7
-  pathOfKey: Hello/KeyTableSystem2
+  guid: 71acccec-c6c7-47be-a939-774ecaed3c86
+  pathOfKey: A1/B
   splitPath:
-  - Hello
-  - KeyTableSystem2
+  - A1
+  - B
+  currentSeparator: 47
+--- !u!114 &4014338422616729844
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b61ff2274215de4a9acb439e90def4a, type: 3}
+  m_Name: KeyEntity
+  m_EditorClassIdentifier: 
+  order: 1
+  guid: cc11b8ff-bed9-4b63-9deb-d6e9f36c4528
+  pathOfKey: A1
+  splitPath:
+  - A1
+  currentSeparator: 47
+--- !u!114 &4258157551775935432
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b61ff2274215de4a9acb439e90def4a, type: 3}
+  m_Name: KeyEntity
+  m_EditorClassIdentifier: 
+  order: 6
+  guid: 1c4be37c-f628-4b0a-a27a-39001fab463a
+  pathOfKey: A/B/C/D
+  splitPath:
+  - A
+  - B
+  - C
+  - D
+  currentSeparator: 47
+--- !u!114 &6469103310965891452
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b61ff2274215de4a9acb439e90def4a, type: 3}
+  m_Name: KeyEntity
+  m_EditorClassIdentifier: 
+  order: 4
+  guid: a34c1a31-27e8-4c15-b93a-8fdf09abe6e7
+  pathOfKey: A/B/C
+  splitPath:
+  - A
+  - B
+  - C
+  currentSeparator: 47
+--- !u!114 &7233471425713298299
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b61ff2274215de4a9acb439e90def4a, type: 3}
+  m_Name: KeyEntity
+  m_EditorClassIdentifier: 
+  order: 5
+  guid: 6a27561b-627e-4113-8aba-a70280d15668
+  pathOfKey: A1/B/C
+  splitPath:
+  - A1
+  - B
+  - C
   currentSeparator: 47
