@@ -12,7 +12,6 @@ namespace GeneralGameDevKit.ValueTableSystem.Internal
 {
     /// <summary>
     /// Table asset for storing keys. <br/>
-    /// This asset must be located at Resources/ValueTableAssets <br/>
     /// You can access keys with KeyString and KeyTable("name") Attribute. <br/>
     /// Look at the example for more details.
     /// </summary>
@@ -29,11 +28,19 @@ namespace GeneralGameDevKit.ValueTableSystem.Internal
         private KeyEntity FindKeyByPath(string path) => keys.FirstOrDefault(k => k.pathOfKey.Equals(path));
         private List<KeyEntity> FindSubKeys(string path) => keys.Where(k => k.IsSubPathOf(path)).ToList();
         
+        /// <summary>
+        /// Get all keys that is same depth.
+        /// </summary>
+        /// <param name="depth">depth to get</param>
+        /// <returns>collection of found keys</returns>
         public List<KeyEntity> GetKeysSameDepth(int depth)
         {
             return keys?.Where(k => k.splitPath.Length-1 == depth).ToList();
         }
         
+        /// <summary>
+        /// Clear all keys.
+        /// </summary>
         public void ClearAllKeys()
         {
             foreach (var key in keys)
@@ -44,7 +51,10 @@ namespace GeneralGameDevKit.ValueTableSystem.Internal
             AssetDatabase.SaveAssets();
         }
 
-        public void RefreshOrder()
+        /// <summary>
+        /// Refresh key order.
+        /// </summary>
+        private void RefreshOrder()
         {
             keys.Sort((ak, bk) =>
             {
@@ -59,6 +69,34 @@ namespace GeneralGameDevKit.ValueTableSystem.Internal
         }
 
 #if UNITY_EDITOR
+        private enum ErrCode
+        {
+            Duplicate,
+            InvalidPath
+        }
+        
+        /// <summary>
+        /// Report error msg.
+        /// </summary>
+        /// <param name="code">err code</param>
+        /// <exception cref="ArgumentOutOfRangeException">invalid code</exception>
+        private static void ReportError(ErrCode code)
+        {
+            var msg = code switch
+            {
+                ErrCode.Duplicate => "Paths cannot be duplicate.",
+                ErrCode.InvalidPath => "Invalid Paths.",
+                _ => throw new ArgumentOutOfRangeException(nameof(code), code, null)
+            };
+
+            Debug.LogError(msg);
+        }
+
+        /// <summary>
+        /// Generate new key.
+        /// </summary>
+        /// <param name="path">path of key</param>
+        /// <returns></returns>
         private KeyEntity GenerateNewKey(string path)
         {
             var newKey = CreateInstance<KeyEntity>();
@@ -69,7 +107,7 @@ namespace GeneralGameDevKit.ValueTableSystem.Internal
         }
 
         /// <summary>
-        /// overwrite current key's guid
+        /// Overwrite current key's guid
         /// </summary>
         /// <param name="keyEntityToOverwrite">key to overwrite</param>
         public void OverwriteKey(KeyEntity keyEntityToOverwrite)
@@ -91,6 +129,10 @@ namespace GeneralGameDevKit.ValueTableSystem.Internal
             AssetDatabase.SaveAssets();
         }
         
+        /// <summary>
+        /// Add if there were no route key.
+        /// </summary>
+        /// <param name="keyEntityToResolve">Key to resolve</param>
         private void ResolveRouteKeys(KeyEntity keyEntityToResolve)
         {
             var splitPath = keyEntityToResolve.splitPath;
@@ -131,9 +173,15 @@ namespace GeneralGameDevKit.ValueTableSystem.Internal
         /// <returns>deferred changes</returns>
         public List<KeyEntity> EditKey(string newPath, string targetKeyGuid)
         {
+            if (string.IsNullOrEmpty(newPath))
+            {
+                ReportError(ErrCode.InvalidPath);
+                return null;
+            }
+            
             if (FindKeyByPath(newPath))
             {
-                Debug.LogError("Paths cannot be duplicate");
+                ReportError(ErrCode.Duplicate);
                 return null;
             }
 
@@ -173,11 +221,22 @@ namespace GeneralGameDevKit.ValueTableSystem.Internal
             return deferredChanges;
         }
 
+        /// <summary>
+        /// Add new key.
+        /// </summary>
+        /// <param name="path">path of key</param>
+        /// <returns>add result</returns>
         public bool AddNewKey(string path)
         {
+            if (string.IsNullOrEmpty(path))
+            {
+                ReportError(ErrCode.InvalidPath);
+                return false;
+            }
+            
             if (FindKeyByPath(path))
             {
-                Debug.LogError("Paths cannot be duplicate");
+                ReportError(ErrCode.Duplicate);
                 return false;
             }
 
@@ -188,6 +247,11 @@ namespace GeneralGameDevKit.ValueTableSystem.Internal
             return true;
         }
 
+        /// <summary>
+        /// Remove target key
+        /// </summary>
+        /// <param name="guid">guid of target key</param>
+        /// <returns>remove result</returns>
         public bool RemoveKey(string guid)
         {
             var targetKey = FindKeyEntity(guid);

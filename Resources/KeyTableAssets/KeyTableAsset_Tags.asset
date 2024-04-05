@@ -1,0 +1,259 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-8141006493558928666
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b61ff2274215de4a9acb439e90def4a, type: 3}
+  m_Name: KeyEntity
+  m_EditorClassIdentifier: 
+  order: 6
+  guid: 74bf3cb6-c48d-4a14-9d5d-c8232e73cdd5
+  pathOfKey: A/B/C/D
+  splitPath:
+  - A
+  - B
+  - C
+  - D
+  currentSeparator: 47
+--- !u!114 &-7016221193968243925
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b61ff2274215de4a9acb439e90def4a, type: 3}
+  m_Name: KeyEntity
+  m_EditorClassIdentifier: 
+  order: 8
+  guid: 0e047802-0fc8-45a4-8dc3-f283ae617c7f
+  pathOfKey: A/AB/C/D/A/C
+  splitPath:
+  - A
+  - AB
+  - C
+  - D
+  - A
+  - C
+  currentSeparator: 47
+--- !u!114 &-5906443076736040603
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b61ff2274215de4a9acb439e90def4a, type: 3}
+  m_Name: KeyEntity
+  m_EditorClassIdentifier: 
+  order: 9
+  guid: ba3a54c0-0152-408c-a64c-9f899f9b4db2
+  pathOfKey: A/AB/C/D/A/C/D
+  splitPath:
+  - A
+  - AB
+  - C
+  - D
+  - A
+  - C
+  - D
+  currentSeparator: 47
+--- !u!114 &-4877206968812295066
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b61ff2274215de4a9acb439e90def4a, type: 3}
+  m_Name: KeyEntity
+  m_EditorClassIdentifier: 
+  order: 2
+  guid: 468fb0a5-bd4b-44b0-bdb6-7aa914d72e6c
+  pathOfKey: A/B
+  splitPath:
+  - A
+  - B
+  currentSeparator: 47
+--- !u!114 &-4863050070918369694
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b61ff2274215de4a9acb439e90def4a, type: 3}
+  m_Name: KeyEntity
+  m_EditorClassIdentifier: 
+  order: 0
+  guid: c935f9b3-cc20-44c8-a29a-b2c282423d3a
+  pathOfKey: A
+  splitPath:
+  - A
+  currentSeparator: 47
+--- !u!114 &-4560954926355721215
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b61ff2274215de4a9acb439e90def4a, type: 3}
+  m_Name: KeyEntity
+  m_EditorClassIdentifier: 
+  order: 10
+  guid: 085d94f9-fb51-4b90-8363-8f6ca3f34855
+  pathOfKey: A/AB/C/D/A/C/D/A
+  splitPath:
+  - A
+  - AB
+  - C
+  - D
+  - A
+  - C
+  - D
+  - A
+  currentSeparator: 47
+--- !u!114 &-2260405965257367346
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b61ff2274215de4a9acb439e90def4a, type: 3}
+  m_Name: KeyEntity
+  m_EditorClassIdentifier: 
+  order: 5
+  guid: b6f2389a-a524-4742-a46d-8152c79b89eb
+  pathOfKey: A/AB/C/D
+  splitPath:
+  - A
+  - AB
+  - C
+  - D
+  currentSeparator: 47
+--- !u!114 &-2252330521040887606
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b61ff2274215de4a9acb439e90def4a, type: 3}
+  m_Name: KeyEntity
+  m_EditorClassIdentifier: 
+  order: 7
+  guid: 989757da-f9d5-49b5-82cd-1ed6d39ba6b3
+  pathOfKey: A/AB/C/D/A
+  splitPath:
+  - A
+  - AB
+  - C
+  - D
+  - A
+  currentSeparator: 47
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 453cc5d122144ed4ebd0bae1f497f6c2, type: 3}
+  m_Name: KeyTableAsset_Tags
+  m_EditorClassIdentifier: 
+  separator: 47
+  keys:
+  - {fileID: -4863050070918369694}
+  - {fileID: 5998806359859068781}
+  - {fileID: -4877206968812295066}
+  - {fileID: 3466590889203502670}
+  - {fileID: 1863378466246536424}
+  - {fileID: -2260405965257367346}
+  - {fileID: -8141006493558928666}
+  - {fileID: -2252330521040887606}
+  - {fileID: -7016221193968243925}
+  - {fileID: -5906443076736040603}
+  - {fileID: -4560954926355721215}
+--- !u!114 &1863378466246536424
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b61ff2274215de4a9acb439e90def4a, type: 3}
+  m_Name: KeyEntity
+  m_EditorClassIdentifier: 
+  order: 4
+  guid: b20571bc-85c9-418d-bd57-f679d7bc2b84
+  pathOfKey: A/B/C
+  splitPath:
+  - A
+  - B
+  - C
+  currentSeparator: 47
+--- !u!114 &3466590889203502670
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b61ff2274215de4a9acb439e90def4a, type: 3}
+  m_Name: KeyEntity
+  m_EditorClassIdentifier: 
+  order: 3
+  guid: b513fce7-b41e-4582-bfcd-d2f21d5e9d32
+  pathOfKey: A/AB/C
+  splitPath:
+  - A
+  - AB
+  - C
+  currentSeparator: 47
+--- !u!114 &5998806359859068781
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b61ff2274215de4a9acb439e90def4a, type: 3}
+  m_Name: KeyEntity
+  m_EditorClassIdentifier: 
+  order: 1
+  guid: 9eaf8df0-0368-4413-947d-4497136841d5
+  pathOfKey: A/AB
+  splitPath:
+  - A
+  - AB
+  currentSeparator: 47
