@@ -18,7 +18,8 @@ MonoBehaviour:
   groupDesc: 
   effectProfilesToApply: []
   effectModifierOverrideData: []
-  effectTags: []
+  effectTags:
+  - tagKey: 71acccec-c6c7-47be-a939-774ecaed3c86
   durationPolicy: 0
   durationOverrideSourceType: 0
   constDuration: 0
@@ -26,6 +27,6 @@ MonoBehaviour:
   stackOverrideSourceType: 0
   constMaxStack: 0
   dynamicMaxStack: test1
-  stackingPolicy: 0
+  useStacking: 0
   stackOutPolicy: 0
   stackDurationPolicy: 0

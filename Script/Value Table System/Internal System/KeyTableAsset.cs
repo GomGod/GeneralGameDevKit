@@ -36,7 +36,12 @@ namespace GeneralGameDevKit.ValueTableSystem.Internal
         
         public void ClearAllKeys()
         {
+            foreach (var key in keys)
+            {
+                AssetDatabase.RemoveObjectFromAsset(key);
+            }
             keys.Clear();
+            AssetDatabase.SaveAssets();
         }
 
         public void RefreshOrder()
