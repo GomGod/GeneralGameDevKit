@@ -4,7 +4,7 @@ using GeneralGameDevKit.Utils;
 using UnityEditor;
 using UnityEngine;
 
-namespace GeneralGameDevKit.ValueTableSystem.Internal
+namespace GeneralGameDevKit.KeyTableSystem.Internal
 {
     /// <summary>
     /// Manager class that manage KeyTableAssets.<br/>
@@ -40,7 +40,7 @@ namespace GeneralGameDevKit.ValueTableSystem.Internal
     }
 }
 
-namespace GeneralGameDevKit.ValueTableSystem
+namespace GeneralGameDevKit.KeyTableSystem
 {
     /// <summary>
     /// Displays the values in the table with the same name.

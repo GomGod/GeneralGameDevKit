@@ -6,7 +6,7 @@ using Developer.GeneralGameDevKit.TagSystem;
 using UnityEditor;
 using UnityEngine;
 
-namespace GeneralGameDevKit.ValueTableSystem.Internal.Editor
+namespace GeneralGameDevKit.KeyTableSystem.Internal.Editor
 {
     [CustomPropertyDrawer(typeof(KeyTableAttribute))]
     public class KeyTablePropertyDrawer : PropertyDrawer

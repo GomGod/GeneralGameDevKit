@@ -1,6 +1,6 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
     <ui:VisualElement name="ObjectBar" style="background-color: rgb(21, 21, 21);">
-        <uie:ObjectField label="Edit Target Table" type="GeneralGameDevKit.ValueTableSystem.Internal.KeyTableAsset, GeneralGameDevKit" name="KeyTableAssetField" allow-scene-objects="false" tooltip="Key table asset fields for edit." style="width: 350px;" />
+        <uie:ObjectField label="Edit Target Table" type="GeneralGameDevKit.KeyTableSystem.Internal.KeyTableAsset, GeneralGameDevKit" name="KeyTableAssetField" allow-scene-objects="false" tooltip="Key table asset fields for edit." style="width: 350px;" />
     </ui:VisualElement>
     <SplitView fixed-pane-initial-dimension="400" name="SplitView" style="flex-grow: 1;">
         <ui:VisualElement name="left" style="flex-grow: 1;">

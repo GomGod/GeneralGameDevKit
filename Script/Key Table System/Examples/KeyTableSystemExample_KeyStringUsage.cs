@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace GeneralGameDevKit.ValueTableSystem.Examples
+namespace GeneralGameDevKit.KeyTableSystem.Examples
 {
     /// <summary>
-    /// This class is for examples of ValueTableSystem.
+    /// This class is for examples of KeyTableSystem.
     /// You can remove this scripts if you don't need.
     /// </summary>
     [CreateAssetMenu(fileName = "KeyTableAsset", menuName = "General Game Dev Kit/Value Table System/Example/Example_KeyStringUsage")]
-    public class ValueTableSystemExample_KeyStringUsage : ScriptableObject
+    public class KeyTableSystemExample_KeyStringUsage : ScriptableObject
     {
         //How to declare KeyString examples.
         [SerializeField, KeyTable("KeyTableAsset_Example")]

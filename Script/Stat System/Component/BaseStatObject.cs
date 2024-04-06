@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Developer.GeneralGameDevKit.TagSystem;
-using GeneralGameDevKit.ValueTableSystem;
+using GeneralGameDevKit.KeyTableSystem;
 using UnityEngine;
 
 namespace GeneralGameDevKit.StatSystem

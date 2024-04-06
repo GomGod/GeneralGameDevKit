@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace GeneralGameDevKit.ValueTableSystem.Internal
+namespace GeneralGameDevKit.KeyTableSystem.Internal
 {
     /// <summary>
     /// Entity of key. <br/>

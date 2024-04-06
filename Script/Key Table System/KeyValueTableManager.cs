@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using GeneralGameDevKit.Utils;
 
-namespace GeneralGameDevKit.ValueTableSystem
+namespace GeneralGameDevKit.KeyTableSystem
 {
     /// <summary>
     /// Manager class for KeyValueTable.

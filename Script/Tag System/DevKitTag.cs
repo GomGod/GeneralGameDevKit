@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using GeneralGameDevKit.ValueTableSystem;
+using GeneralGameDevKit.KeyTableSystem;
 using UnityEngine;
 
 namespace Developer.GeneralGameDevKit.TagSystem

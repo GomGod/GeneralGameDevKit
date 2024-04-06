@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-namespace GeneralGameDevKit.ValueTableSystem.Internal
+namespace GeneralGameDevKit.KeyTableSystem.Internal
 {
     /// <summary>
     /// Table asset for storing keys. <br/>
@@ -18,8 +18,7 @@ namespace GeneralGameDevKit.ValueTableSystem.Internal
     [CreateAssetMenu(fileName = "KeyTableAsset", menuName = "General Game Dev Kit/Value Table System/Management/Key Table Asset")]
     public class KeyTableAsset : ScriptableObject
     {
-        [SerializeField] public char separator = '/';
-        
+        [SerializeField, HideInInspector] public char separator = '/';
         [SerializeField, HideInInspector] public List<KeyEntity> keys;
         
         private readonly StringBuilder _sb = new();

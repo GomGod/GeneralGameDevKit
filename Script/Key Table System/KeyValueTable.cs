@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace GeneralGameDevKit.ValueTableSystem
+namespace GeneralGameDevKit.KeyTableSystem
 {
     /// <summary>
-    /// Table class designed for ValueTableSystem. <br/>
+    /// Table class designed for KeyTableSystem. <br/>
     /// Similar to Dictionary, but limited and added some features to manage callback and key-value pairs.
     /// </summary>
     public class KeyValueTable

@@ -1,8 +1,7 @@
 ﻿using System;
-using GeneralGameDevKit.StatSystem;
 using UnityEngine;
 
-namespace GeneralGameDevKit.ValueTableSystem
+namespace GeneralGameDevKit.KeyTableSystem
 {
     [Serializable]
     public class TableValueWriter

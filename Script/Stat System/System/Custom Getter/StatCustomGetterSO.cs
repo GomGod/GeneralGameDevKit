@@ -1,4 +1,4 @@
-﻿using GeneralGameDevKit.ValueTableSystem;
+﻿using GeneralGameDevKit.KeyTableSystem;
 using UnityEngine;
 
 namespace GeneralGameDevKit.StatSystem

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using GeneralGameDevKit.ValueTableSystem.Internal;
+using GeneralGameDevKit.KeyTableSystem.Internal;
 using UnityEngine;
 using UnityEngine.UIElements;
 

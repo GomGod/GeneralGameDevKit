@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using GeneralGameDevKit.ValueTableSystem.Internal;
+using GeneralGameDevKit.KeyTableSystem.Internal;
 using UnityEngine;
 
 namespace Developer.GeneralGameDevKit.TagSystem

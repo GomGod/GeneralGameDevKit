@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using GeneralGameDevKit.Script.Editor;
-using GeneralGameDevKit.ValueTableSystem.Internal;
+using GeneralGameDevKit.KeyTableSystem.Internal;
 using UnityEditor;
+using UnityEditor.Callbacks;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -13,7 +14,8 @@ public class KeyTableEditor : EditorWindow
     [SerializeField] private VisualTreeAsset mVisualTreeAsset;
 
     private const string k_KeyTableField = "KeyTableAssetField";
-
+    private static KeyTableAsset _assetOnOpen; 
+    
     private ObjectField _keyTableField;
     private KeyTableStructureView _structureView;
     private KeyTableInspectorView _inspectorView;
@@ -22,12 +24,25 @@ public class KeyTableEditor : EditorWindow
     private KeyTableAsset _currentEditTarget;
     
     [MenuItem("GGDK/Key Table System/Table Editor")]
-    public static void ShowExample()
+    public static void OpenWindow()
     {
         var wnd = GetWindow<KeyTableEditor>();
         wnd.titleContent = new GUIContent("KeyTableEditor");
     }
 
+    [OnOpenAsset]
+    public static bool OnOpenAsset(int instanceId, int line)
+    {
+        if (Selection.activeObject is KeyTableAsset asset)
+        {
+            _assetOnOpen = asset;
+            OpenWindow();
+            return true;
+        }
+
+        return false;
+    }
+    
     public void CreateGUI()
     {
         var root = rootVisualElement;
@@ -50,7 +65,12 @@ public class KeyTableEditor : EditorWindow
         _inspectorView.ChangeCurrentTargetKeyEntity(null);
         
         OnEditTargetChanged(null);
-        UpdateViewEnableState();    
+        UpdateViewEnableState();
+        
+        if (!_assetOnOpen) return;
+        
+        SwitchEditTarget(_assetOnOpen);
+        _assetOnOpen = null;
     }
 
     private void AddKey()
@@ -111,6 +131,11 @@ public class KeyTableEditor : EditorWindow
         if (_currentEditTarget)
             _structureView.PopulateView(_currentEditTarget);
         UpdateViewEnableState();
+    }
+
+    private void SwitchEditTarget(KeyTableAsset newTarget)
+    {
+        _keyTableField.value = newTarget;
     }
 
     private void UpdateViewEnableState()
