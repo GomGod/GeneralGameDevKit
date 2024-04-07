@@ -14,15 +14,15 @@ public class KeyTableEditor : EditorWindow
     [SerializeField] private VisualTreeAsset mVisualTreeAsset;
 
     private const string k_KeyTableField = "KeyTableAssetField";
-    private static KeyTableAsset _assetOnOpen; 
-    
+    private static KeyTableAsset _assetOnOpen;
+
     private ObjectField _keyTableField;
     private KeyTableStructureView _structureView;
     private KeyTableInspectorView _inspectorView;
     private KeyTableControlView _controlView;
 
     private KeyTableAsset _currentEditTarget;
-    
+
     [MenuItem("GGDK/Key Table System/Table Editor")]
     public static void OpenWindow()
     {
@@ -33,20 +33,18 @@ public class KeyTableEditor : EditorWindow
     [OnOpenAsset]
     public static bool OnOpenAsset(int instanceId, int line)
     {
-        if (Selection.activeObject is KeyTableAsset asset)
-        {
-            _assetOnOpen = asset;
-            OpenWindow();
-            return true;
-        }
+        if (Selection.activeObject is not KeyTableAsset asset)
+            return false;
 
-        return false;
+        _assetOnOpen = asset;
+        OpenWindow();
+        return true;
     }
-    
+
     public void CreateGUI()
     {
         var root = rootVisualElement;
-        
+
         mVisualTreeAsset.CloneTree(root);
         root.styleSheets.Add(mStyleSheet);
 
@@ -54,7 +52,7 @@ public class KeyTableEditor : EditorWindow
         _inspectorView = root.Q<KeyTableInspectorView>();
         _controlView = root.Q<KeyTableControlView>();
         _keyTableField = root.Q<ObjectField>(k_KeyTableField);
-        
+
         _structureView.OnSelectedChange = OnTargetKeySelectionChanged;
 
         _controlView.OnButtonAddClicked = AddKey;
@@ -63,12 +61,12 @@ public class KeyTableEditor : EditorWindow
 
         _keyTableField.RegisterCallback<ChangeEvent<Object>>(OnEditTargetChanged);
         _inspectorView.ChangeCurrentTargetKeyEntity(null);
-        
+
         OnEditTargetChanged(null);
         UpdateViewEnableState();
-        
+
         if (!_assetOnOpen) return;
-        
+
         SwitchEditTarget(_assetOnOpen);
         _assetOnOpen = null;
     }
@@ -149,21 +147,12 @@ public class KeyTableEditor : EditorWindow
         if (!enableEditor)
         {
             _structureView.ClearTreeView();
-        }
-
-        if (!enableEditor)
-        {
             _inspectorView.ChangeCurrentTargetKeyEntity(null);
-        }
-
-        if (!enableEditor)
-        {
             _controlView.SetButtonEnable(false, false, false);
         }
         else
         {
             var editBtnEnabled = _structureView.GetSelectedKeyEntity().Any();
-
             _controlView.SetButtonEnable(editBtnEnabled, true, editBtnEnabled);
         }
     }
